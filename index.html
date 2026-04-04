@@ -1191,7 +1191,7 @@ function showMainSection(section) {
             <h2 style="text-align:center;">📖 ${t("guestbook")}</h2>
 
             <!-- ✍️ FORM -->
-            <form onsubmit="addMessage(event)">
+            <form onsubmit="addMessage(event)" style="
                 display:flex;
                 flex-direction:column;
                 gap:10px;
@@ -1211,7 +1211,6 @@ function showMainSection(section) {
 
         </div>
     `;
-
     loadMessages();
 }
 }
