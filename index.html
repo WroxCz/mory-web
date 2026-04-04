@@ -1276,7 +1276,12 @@ async function deleteMessage(id) {
         return;
     }
 
-    await deleteDoc(doc(db, "messages", id));
+    try {
+        await deleteDoc(doc(db, "messages", id));
+        console.log("✅ Smazáno:", id);
+    } catch (e) {
+        console.error("❌ CHYBA MAZÁNÍ:", e);
+    }
 
     loadMessages();
 }
