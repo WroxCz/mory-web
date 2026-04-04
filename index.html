@@ -1252,7 +1252,7 @@ async function loadMessages() {
         return;
     }
 
-    querySnapshot.forEach((docSnap) => {
+    qquerySnapshot.forEach((docSnap) => {
     const msg = docSnap.data();
 
     html += `
@@ -1262,8 +1262,8 @@ async function loadMessages() {
             <p>${msg.text}</p>
 
             ${
-                msg.reply
-                ? `<div style="margin-top:10px; padding:10px; border-top:1px solid #555;">
+                msg.reply && msg.reply !== ""
+                ? `<div style="margin-top:10px; padding:10px; border-top:1px solid #555; color:#8affc1;">
                         💬 Odpověď: ${msg.reply}
                    </div>`
                 : ""
