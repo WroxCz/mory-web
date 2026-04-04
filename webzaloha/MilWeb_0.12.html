@@ -1,0 +1,830 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Knihovna příběhů</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Cinzel&display=swap" rel="stylesheet">
+
+<style>
+body {
+    margin: 0;
+    background: radial-gradient(circle at center, #111 0%, #000 100%);
+    font-family: 'Cinzel', serif;
+    color: #e0e0e0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* kouř */
+.smoke {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 200%;
+    height: 200%;
+    pointer-events: none;
+    z-index: 0;
+    background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.12), transparent 60%),
+                radial-gradient(circle at 70% 70%, rgba(255,255,255,0.10), transparent 60%);
+}
+
+/* obsah */
+.library, h1, .content, .footer {
+    position: relative;
+    z-index: 1;
+}
+
+.counter {
+    position: fixed;
+    top: 15px;
+    right: 25px;
+    color: #aaa;
+}
+
+h1 {
+    margin: 30px;
+    letter-spacing: 4px;
+    color: #bbb;
+}
+
+.library {
+    display: flex;
+    gap: 6px;
+    padding: 20px;
+    border-bottom: 4px solid #222;
+}
+
+.book {
+    width: 50px;
+    height: 320px;
+    background: linear-gradient(180deg, #111, #000);
+    border-left: 2px solid #444;
+    border-right: 1px solid #222;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    color: #bbb;
+}
+
+.wrap {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.top, .bottom {
+    text-align: center;
+    font-size: 12px;
+}
+
+.middle {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.spine {
+    writing-mode: vertical-rl;
+    transform: rotate(0deg);
+    font-size: 14px;
+    text-align: center;
+}
+
+.vr {
+    width: 1px;
+    height: 120px;
+    background: linear-gradient(to bottom, transparent, #ccc, transparent);
+}
+
+.content {
+    display: none;
+    max-width: 700px;
+    padding: 20px;
+}
+
+.active {
+    display: block;
+}
+
+.back {
+    margin-top: 20px;
+    cursor: pointer;
+}
+
+.footer {
+    position: fixed;
+    bottom: 10px;
+    right: 20px;
+    font-size: 12px;
+    color: #777;
+}
+.footer {
+    position: fixed;
+    bottom: 10px;
+    right: 20px;
+    font-size: 12px;
+    color: #777;
+}
+
+/* 🔥 TLAČÍTKA */
+button {
+    background: #111;
+    color: #ccc;
+    border: 1px solid #555;
+    padding: 6px 12px;
+    cursor: pointer;
+    font-family: 'Cinzel', serif;
+}
+
+button:hover {
+    color: white;
+    border-color: #aaa;
+}
+#pageText {
+    transition: opacity 0.2s ease;
+    min-height: 400px;
+    text-align: justify;
+    line-height: 1.6;
+    text-indent: 2em;
+    text-transform: none;
+    font-family: Georgia, serif;
+}
+#sectionContent {
+    transition: opacity 0.3s ease;
+}   
+</style>
+
+</head>
+
+<body>
+
+<div class="smoke"></div>
+<div class="counter" id="counter">👁 načítám...</div>
+
+<h1>Knihovna příběhů</h1>
+
+<div class="library" id="library"></div>
+<div class="content" id="content"></div>
+
+<div class="footer">Crafted by Wrox & ChatGPT</div>
+
+<script>
+// 🔥 počítadlo návštěv
+let count = localStorage.getItem("visits");
+
+if (!count) {
+    count = 0;
+} else {
+    count = parseInt(count);
+}
+
+count++;
+
+localStorage.setItem("visits", count);
+
+document.getElementById("counter").innerText =
+    "👁 " + count + (count === 1 ? " návštěva" : " návštěv");
+
+const library = document.getElementById('library');
+const content = document.getElementById('content');
+let currentLang = "cz";
+let currentChapter = 1;
+let page = 0;
+const books = {
+    1: "Oheň a Voda",
+    2: "neznámá kniha",
+    3: "neznámá kniha",
+    4: "neznámá kniha",
+    5: "neznámá kniha"
+};
+const bookIcons = {
+    1: "🔥💧",
+    2: "📖"
+};
+const readyBooks = [1]; // sem budeš přidávat další hotové knihy
+const chapterNames = {
+    1: {
+        1: "Ruiny Turaynu",
+        2: "Písky Pouště měsíčního světla",
+        3: "Temný les"
+    }
+};
+
+    const characters = [
+{
+    name: "Moryana",
+    img: "Moryana.jpg",
+    role: "Léčitelka světla",
+    cz: "Moryana pochází z Kastletonu, rušného přístavního města na kontinentu Laslan, kde se od dětství pohybovala mezi lidmi nejrůznějších kultur. Už jako malá byla vybrána k výcviku ve Věži čistého světla, což z ní učinilo léčitelku s hlubokými znalostmi starých textů a rituálů. Její povaha je spíše introspektivní, tichá a pečující; často upřednostňuje druhé před sebou.",
+    en: "Moryana hails from Kastleton, a bustling port city on the continent of Laslan, where she has been surrounded by people of all cultures since childhood. She was chosen as a young girl to train at the Tower of Pure Light, which made her a healer with a deep knowledge of ancient texts and rituals. Her nature is rather introspective, quiet, and caring; she often puts others before herself."
+},
+{
+    name: "Aaliyah",
+    img: "Aaliyah.jpg",
+    role: "Mágyně ohně",
+    cz: "Aaliyah pochází z přístavního města Vienta na kontinentu Stonegrad, kde se lidé od dětství učí vnímat oheň jako dar, nikoli prokletí. Je mágyní ohně, která prošla výcvikem ve Svatyni Rudého dechu. Aaliyah je impulzivní, odvážná a nezávislá, často mluví rychleji, než myslí a její sarkastické poznámky zlehčují i ty nejtemnější chvíle.",
+    en: "Aaliyah hails from the port city of Vienta on the continent of Stonegrad, where people are taught from childhood to see fire as a gift, not a curse. She is a fire mage who trained at the Shrine of Red Breath. Impulsive, bold, and independent, Aaliyah often speaks faster than she thinks, and her sarcastic remarks lighten even the darkest moments."
+},
+{
+    name: "James",
+    img: "James.jpg",
+    role: "Nájemný vrah",
+    cz: "James se narodil v městě Herba na kontinentu Talandre, kde život vrahů a špehů formuje chladnou disciplínu. Je nájemným vrahem a mistrem boje na blízko, vládne dýkami, kopím i stínovou magií. Jeho povaha je klidná, tichá a pozorující, nikdy nemluví zbytečně. ",
+    en: "James was born in the city of Herba on the continent of Talandre, where the life of assassins and spies shapes a cold discipline. He is a hired assassin and a master of close combat, wielding daggers, spears and shadow magic. His nature is calm, quiet and observant, never speaking unnecessarily."
+},
+{
+    name: "Mizerik",
+    img: "Mizerik.jpg",
+    role: "Nájemný vrah",
+    cz: "Mizerik, mladší bratr Jamese, pochází z Herby a vyrůstal ve stejném prostředí jako on. Je nájemným vrahem, který ovládá boj s mečem, kopím i stínovou magii, ale na rozdíl od Jamese jedná impulzivněji a s větší krutostí. Je vášnivý, věrný, prudký v rozhodování a zároveň velmi škodolibý. ",
+    en: "Mizerik, James' younger brother, comes from Herba and grew up in the same environment as him. He is a hired assassin who masters sword, spear and shadow magic, but unlike James, he acts more impulsively and with greater cruelty. He is passionate, loyal, quick in decision-making and at the same time very malicious."
+},
+{
+    name: "Thomas",
+    img: "Thomas.jpg",
+    role: "Rytíř",
+    cz: "Thomas, rytíř hradu Kamenný strážce na kontinentu Stonegard, byl vychován v přísném vojenském řádu, kde čest, disciplína a síla znamenaly vše. Je zkušeným bojovníkem, který používá meč a kopí a dokáže vést muže v poli. Je čestný, hrdý, tvrdohlavý a prudký v rozhodování, zároveň však silně loajální a odhodlaný chránit nevinné, i za cenu vlastního života. ",
+    en: "Thomas, a knight of the Stoneguard Castle on the continent of Stonegard, was raised in a strict military order where honor, discipline, and strength meant everything. He is a skilled warrior who wields sword and spear and can lead men in the field. He is honest, proud, stubborn, and quick-witted, yet fiercely loyal and determined to protect the innocent, even at the cost of his own life."
+},
+{
+    name: "William",
+    img: "William.jpg",
+    role: "Kapitán řitířů",
+    cz: "William pochází z Herby. Byl převelen do Vienty a později hradu Kamenný strážce, kde působí jako kapitán rytířů. Právě tam se setkal s Thomasem a rychle se z nich stali nejlepší přátelé.  Povahou je okouzlující, vtipný a inteligentní, avšak za jeho šarmem se skrývá sobectví a manipulativnost.",
+    en: "William comes from Herba. He was transferred to Vienta and later to the Stoneguard Castle, where he serves as the captain of the knights. It was there that he met Thomas and they quickly became best friends. He is charming, witty and intelligent, but behind his charm lies selfishness and manipulation."
+},
+{
+    name: "Brienne",
+    img: "Brienne.jpg",
+    role: "Bytost stínu",
+    cz: "KBrienne je bytost stínu, která na sebe bere podobu mladé a křehké léčitelky z Věži čistého světla. Je krutá, manipulativní a pomstychtivá, vládne stínovou magií, magií proměny a psychickou kontrolou. ",
+    en: "Brienne is a being of the shadow who takes the form of a young and fragile healer from the Tower of Pure Light. She is cruel, manipulative and vengeful, she masters shadow magic, transformation magic and psychic control."
+},
+{
+    name: "Zarveth",
+    img: "Zarveth.jpg",
+    role: "Velitel temnoty",
+    cz: "Zarveth je bytost stínu a nejvěrnější služebník Morr’kalila. Působí jako děsivý velitel a nelítostný bojovník. Je krutý, dominantní a manipulativní, vládne stínovou magií a vede armády temnoty. V boji používá meč a kopí a disponuje obrovskou nelidskou silou. Neuznává rovnocennost, jen podřízenost.",
+    en: "Zarveth is a being of the shadow and the most loyal servant of Morr'kalil. He acts as a terrifying commander and a ruthless warrior. He is cruel, dominant and manipulative, wielding shadow magic and leading armies of darkness. He uses a sword and spear in battle and possesses immense inhuman strength. He does not recognize equality, only subordination."
+},
+{
+    name: "Morr'kalil",
+    img: "Morrkalil.jpg",
+    role: "Temný bůh",
+    cz: "Morr’kalil je temný bůh krve, utrpení a smrti, přebývající v Temnotě. Je posedlý utrpením, touží přetvořit svět v nekonečný chrám bolesti. Jeho stoupenci mu slouží ve fanatické víře, že skrze bolest přijde očista. Vládne prastaré temné magii, která mu umožňuje vysávat životní sílu z živých bytostí, ovládat krev a duše, vyvolávat nemrtvé. Dokáže šířit nákazu temnoty, měnit lidi v znetvořené služebníky a otevírat trhliny mezi světem živých a říší smrti. Jeho přítomnos láme vůli a probouzí strach i šílenství v srdcích smrtelníků. ",
+    en: "Morr'kalil is a dark god of blood, suffering, and death, dwelling in the Darkness. He is obsessed with suffering, desiring to transform the world into an endless temple of pain. His followers serve him in the fanatical belief that through pain comes purification. He wields ancient dark magic that allows him to drain the life force from living beings, control blood and souls, and summon the undead. He can spread the plague of darkness, turn people into disfigured servants, and open rifts between the world of the living and the realm of death. His presence breaks the will and awakens fear and madness in the hearts of mortals."
+},
+{
+    name: "Aron DaVinci",
+    img: "AronDaVinci.jpg",
+    role: "Velitel odporu",
+    cz: "Aron DaVinci je velitel Spojeneckých sil odporu Laslanu. Pochází s Kastletonu. Povahově je klidný, vyrovnaný a autoritativní. Symbolizuje vůdce, který dokáže spojit rozdílné síly. Stojí na straně dobra a usiluje o sjednocení. ",
+    en: "Aron DaVinci is the commander of the Allied Resistance Forces of Laslan. He comes from Kastleton. He is calm, balanced and authoritative in nature. He symbolizes a leader who can unite different forces. He stands on the side of good and strives for unification."
+},
+{
+    name: "Jacque Hander",
+    img: "JacqueHander.jpg",
+    role: "Velitel",
+    cz: "Jacque Hander je velitelem Stonegradských sil odporu. Je autoritativní a neústupný, jeho přítomnost v příběhu ukazuje vojenský řád a pevnost. Vztahy k ostatním jsou postaveny na přísné hierarchii, avšak jeho autorita není jen prázdnou maskou – je postavena na schopnosti vést. ",
+    en: "Jacque Hander is the commander of the Stonegrad Resistance. He is authoritative and unyielding, his presence in the story shows military order and strength. Relations with others are built on a strict hierarchy, but his authority is not just an empty mask - it is built on the ability to lead."
+},
+{
+    name: "Sienna Parsons",
+    img: "SiennaParsons.jpg",
+    role: "Hlavní mágyně",
+    cz: "Sienna Parsons je hlavní mágyní Spojeneckých sil odporu a hradu Kamenný strážce. Je klidná, vyrovnaná a moudrá, ovládá zemní magii a magii portálů. Je rádkyní, mostem mezi jednotlivými vůdci a silami, které by se jinak snadno rozhádaly.",
+    en: "Jacque Hander je velitelem Stonegradských sil odporu. Je autoritativní a neústupný, jeho přítomnost v příběhu ukazuje vojenský řád a pevnost. Vztahy k ostatním jsou postaveny na přísné hierarchii, avšak jeho autorita není jen prázdnou maskou – je postavena na schopnosti vést. "
+}    
+];
+// 📚 vytvoření knih
+for (let i = 1; i <= 5; i++) {
+    const book = document.createElement('div');
+    book.className = 'book';
+    book.innerHTML = `
+    <div class="wrap">
+        <div class="top">${i}</div>
+
+        <div class="middle">
+            <div class="spine">${books[i] || "Neznámá kniha"}</div>
+        </div>
+
+        <div class="bottom">
+    ${readyBooks.includes(i) ? (bookIcons[i] || "📖") : "⏳"}
+</div>
+    </div>
+`;
+
+    book.onclick = () => openBook(i);
+    library.appendChild(book);
+}
+
+// 📖 otevření knihy
+function openBook(i) {
+    localStorage.setItem("lastBook", i);
+    localStorage.setItem("inBook", "true");
+
+    library.style.display = 'none';
+    content.classList.add('active');
+
+    if (i === 1) {
+        content.innerHTML = `
+            <h2>Kniha 1</h2>
+            <h3>${books[i] || "Neznámá kniha"}</h3>
+
+             <div id="bookMenu" style="display:flex; gap:10px; justify-content:center; margin:20px 0; flex-wrap:wrap;">
+                <button data-section="cz">🇨🇿 Příběh CZ</button>
+                <button data-section="en">🇬🇧 Story EN</button>
+                <button data-section="gallery">🖼 Galerie</button>
+                <button data-section="characters">👤 Postavy</button>
+            </div>
+
+            <div id="sectionContent">
+                <p style="text-align:center;">👆 Vyber si část knihy</p>
+            </div>
+
+            <div class="back" onclick="goBack()">← zpět do knihovny</div>
+        `;
+
+        // 🔥 JEDINÝ LISTENER PRO VŠECHNY TLAČÍTKA
+    document.getElementById("bookMenu").onclick = (e) => {
+        const btn = e.target.closest("button");
+        if (!btn) return;
+
+        const section = btn.dataset.section;
+        if (section) {
+            showSection(section);
+        }
+    };
+}
+else {
+        content.innerHTML = `
+            <h2>Kniha ${i}</h2>
+            <h3>${books[i] || "Neznámá kniha"}</h3>
+
+            <p style="text-align:center; margin-top:30px; opacity:0.7;">
+                ✨ Tato kniha se teprve připravuje...
+            </p>
+
+            <div class="back" onclick="goBack()">← zpět do knihovny</div>
+        `;
+    }
+
+
+    // 🔁 návrat do poslední sekce
+    const lastLang = localStorage.getItem("lastLang");
+    const lastSection = localStorage.getItem("lastSection");
+
+    if (i === 1 && (lastSection || lastLang)) {
+        setTimeout(() => {
+            showSection(lastSection || lastLang);
+        }, 50);
+    }
+}
+
+// 🔁 sekce knihy
+
+    let html = `<h3>Postavy</h3>
+
+    <div style="
+        display:grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap:25px;
+        padding:10px;
+    ">`;
+
+    characters.forEach((char, index) => {
+        html += `
+            <div onclick="window.openCharacter(${index})" style="
+                border:1px solid #555;
+                padding:10px;
+                text-align:center;
+                background:rgba(0,0,0,0.4);
+                cursor:pointer;
+                transition:0.3s;
+            " onmouseover="this.style.transform='scale(1.05)'" 
+              onmouseout="this.style.transform='scale(1)'">
+
+                <img src="knihy/kniha1/images/${char.img}" 
+                     style="
+                        width:100%;
+                        height:300px;
+                        object-fit:cover;
+                        object-position: top;
+                        margin-bottom:10px;
+                     ">
+
+                <h4>${char.name}</h4>
+
+                <div style="font-size:12px; opacity:0.7;">
+                    ${char.role}
+                </div>
+            </div>
+        `;
+    });
+
+
+function showSection(section) {
+
+    const container = document.getElementById("sectionContent");
+    if (!container) return;
+
+    localStorage.setItem("lastSection", section);
+
+
+    // 📖 CZ
+    if (section === "cz") {
+        currentLang = "cz";
+
+        container.innerHTML = `
+            <div style="text-align:center; margin-bottom:10px;">
+                <button onclick="toggleChapters()">📚 Kapitoly</button>
+            </div>
+
+            <div id="chapterList" style="display:none; text-align:center;"></div>
+
+            <div id="chapterContent">
+                <div id="chapterTitle"></div>
+                <div id="pageText"></div>
+
+                <div style="margin-top:15px; text-align:center;">
+                    <button onclick="prevPage()">⬅</button>
+                    <span id="pageInfo"></span>
+                    <button onclick="nextPage()">➡</button>
+                </div>
+            </div>
+        `;
+
+        let saved = parseInt(localStorage.getItem("lastChapter_cz")) || 1;
+        setTimeout(() => openChapter(1, saved, "cz"), 0);
+    }
+
+    // 📖 EN
+    else if (section === "en") {
+        currentLang = "en";
+
+        container.innerHTML = `
+            <div style="text-align:center; margin-bottom:10px;">
+                <button onclick="toggleChapters()">📚 Kapitoly</button>
+            </div>
+
+            <div id="chapterList" style="display:none; text-align:center;"></div>
+
+            <div id="chapterContent">
+                <div id="chapterTitle"></div>
+                <div id="pageText"></div>
+
+                <div style="margin-top:15px; text-align:center;">
+                    <button onclick="prevPage()">⬅</button>
+                    <span id="pageInfo"></span>
+                    <button onclick="nextPage()">➡</button>
+                </div>
+            </div>
+        `;
+
+        let saved = parseInt(localStorage.getItem("lastChapter_en")) || 1;
+        setTimeout(() => openChapter(1, saved, "en"), 0);
+    }
+
+    // 🖼 GALERIE
+    if (section === "gallery") {
+        
+
+        const images = ["obalka.jpg","goku.jpg","magie.jpg"];
+
+        let html = `<h3>Galerie</h3>
+        <div style="display:flex; flex-wrap:wrap; gap:15px; justify-content:center;">`;
+
+        images.forEach(img => {
+            html += `<img src="knihy/kniha1/scenes/${img}" style="width:200px;">`;
+        });
+
+        html += `</div>`;
+        container.innerHTML = html;
+    }
+
+    // 👤 POSTAVY
+    else if (section === "characters") {
+
+        let html = `<h3>Postavy</h3>
+        <div style="
+            display:grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap:25px;
+            padding:10px;
+        ">`;
+
+        characters.forEach((char, index) => {
+            html += `
+                <div onclick="openCharacter(${index})" style="
+                    border:1px solid #555;
+                    padding:10px;
+                    text-align:center;
+                    background:rgba(0,0,0,0.4);
+                    cursor:pointer;
+                ">
+                    <img src="knihy/kniha1/images/${char.img}" 
+                         style="width:100%; height:300px; object-fit:cover; object-position:top;">
+                    <h4>${char.name}</h4>
+                    <div style="opacity:0.7;">${char.role}</div>
+                </div>
+            `;
+        });
+
+        html += `</div>`;
+        container.style.opacity = 0;
+
+setTimeout(() => {
+    container.innerHTML = html;
+    container.style.opacity = 1;
+}, 250);
+    }
+}    
+// 📄 načítání kapitol
+function openChapter(book, chapter, lang, forcedPage = null) {
+    currentChapter = chapter;
+
+    localStorage.setItem("lastChapter_" + lang, chapter);
+    localStorage.setItem("lastLang", lang);
+
+    if (chapter < 1) chapter = 1;
+
+    const path = `knihy/kniha${book}/${lang}/kap${String(chapter).padStart(2,'0')}.txt`;
+
+    fetch(path)
+        .then(res => {
+            if (!res.ok) throw new Error("404");
+            return res.text();
+        })
+        .then(text => {
+
+            // 🔥 název kapitoly
+            let firstLine = text.split(/\r?\n/).find(line => line.trim() !== "") || "Bez názvu";
+            window.chapterTitleText = firstLine;
+
+            // 🔥 text bez názvu
+            let cleanText = text.split(/\r?\n/).slice(1).join("\n");
+
+            // 🔥 REALNÉ STRÁNKOVÁNÍ (Kindle styl)
+
+let pages = [];
+const box = document.getElementById("measureBox");
+const contentBox = document.getElementById("pageText");
+
+box.style.width = contentBox.clientWidth + "px";
+
+const maxHeight = contentBox.clientHeight || 400;
+
+box.innerText = "";
+
+// 🔥 rozdělení na věty
+let sentences = cleanText.match(/[^.!?]+[.!?]+|[^.!?]+$/g) || [];
+
+let current = "";
+
+sentences.forEach(sentence => {
+    let test = current + sentence + " ";
+
+    box.innerText = test;
+
+    if (box.scrollHeight > maxHeight) {
+        pages.push(current);
+        current = sentence + " ";
+    } else {
+        current = test;
+    }
+});
+
+// poslední stránka
+if (current.trim() !== "") {
+    pages.push(current);
+}
+
+            // 🔥 stránka
+            if (forcedPage === "last") {
+                page = pages.length - 1;
+            } else if (forcedPage !== null) {
+                page = forcedPage;
+            } else {
+                let saved = localStorage.getItem("page_" + lang + "_" + chapter);
+                page = saved !== null ? parseInt(saved) : 0;
+            }
+
+            if (page < 0) page = 0;
+            if (page >= pages.length) page = pages.length - 1;
+
+            // 🔥 render
+            window.renderPage = function () {
+
+                const chapterTitle = document.getElementById("chapterTitle");
+                if (chapterTitle) {
+                    chapterTitle.innerText = window.chapterTitleText || "Bez názvu";
+                }
+
+                const el = document.getElementById("pageText");
+                if (!el) return;
+
+                el.style.opacity = 0;
+
+                setTimeout(() => {
+                    el.innerText = pages[page] || "⚠ prázdná stránka";
+                    el.style.opacity = 1;
+                }, 100);
+
+                const info = document.getElementById("pageInfo");
+                if (info) {
+                    info.innerText =
+                        (lang === 'cz' ? 'Stránka ' : 'Page ') +
+                        (page + 1) + " / " + pages.length;
+                }
+
+                localStorage.setItem("page_" + lang + "_" + chapter, page);
+            };
+
+            // 🔥 navigace
+            window.prevPage = function () {
+                if (chapter === 1 && page === 0) return;
+
+                if (page > 0) {
+                    page--;
+                    renderPage();
+                } else {
+                    openChapter(book, chapter - 1, lang, "last");
+                }
+            };
+
+            window.nextPage = function () {
+                if (page < pages.length - 1) {
+                    page++;
+                    renderPage();
+                    return;
+                }
+
+                openChapter(book, chapter + 1, lang, 0);
+            };
+
+            renderPage();
+        })
+        .catch((err) => {
+            console.error("ERROR DETAIL:", err);
+
+            const el = document.getElementById("pageText");
+            if (el) el.innerText = "❌ Chyba načítání";
+        });
+}
+function goToChapter(chapter) {
+    openChapter(1, chapter, currentLang);
+}
+async function getAvailableChapters(book, lang, max = 50) {
+    let available = [];
+
+    for (let i = 1; i <= max; i++) {
+        const path = `knihy/kniha${book}/${lang}/kap${String(i).padStart(2,'0')}.txt`;
+
+        try {
+            const res = await fetch(path, { method: "HEAD" });
+            if (res.ok) {
+                available.push(i);
+            } else {
+                break; // jakmile nenajde → konec
+            }
+        } catch {
+            break;
+        }
+    }
+
+    return available;
+}
+async function generateChapters() {
+    const list = document.getElementById("chapterList");
+
+    const chapters = await getAvailableChapters(1, currentLang);
+
+    let html = "";
+
+    chapters.forEach(i => {
+        let style = "margin:3px;";
+
+        if (i === currentChapter) {
+            style += " background:#888; color:#000;";
+        }
+
+        html += `<button style="${style}" onclick="goToChapter(${i})">${i}</button>`;
+    });
+
+    list.innerHTML = html;
+}
+async function toggleChapters() {
+    const list = document.getElementById("chapterList");
+
+    if (list.style.display === "none") {
+        list.style.display = "block";
+        await generateChapters();
+    } else {
+        list.style.display = "none";
+    }
+}
+function openCharacter(index) {
+
+    const char = characters[index];
+
+    const container = document.getElementById("sectionContent");
+
+    container.innerHTML = `
+    <div style="
+        max-width:800px; 
+        margin:auto; 
+        text-align:center;
+        font-family: Georgia, serif;
+        line-height:1.6;
+    ">
+
+            <button onclick="showSection('characters')" style="margin-bottom:20px;">
+                ← zpět na postavy
+            </button>
+
+            <h2>${char.name}</h2>
+            <div style="opacity:0.7; margin-bottom:20px;">${char.role}</div>
+
+            <img src="knihy/kniha1/images/${char.img}" 
+                style="
+                    width:100%; 
+                    max-height:500px; 
+                    object-fit:contain; 
+                    margin-bottom:20px;
+                    background:black;
+                    border:1px solid #444;
+                    padding:5px;
+                ">
+            <div style="text-align:justify;">
+                <p><b>CZ:</b> ${char.cz}</p>
+                <p><b>EN:</b> ${char.en || "—"}</p>
+            </div>
+
+        </div>
+        
+    `;
+};
+
+// 🔙 zpět
+function goBack() {
+    localStorage.setItem("inBook", "false");
+    content.classList.remove('active');
+    library.style.display = 'flex';
+}
+window.onload = function() {
+    const lastLang = localStorage.getItem("lastLang");
+    const lastSection = localStorage.getItem("lastSection");
+    const inBook = localStorage.getItem("inBook");
+    const lastBook = localStorage.getItem("lastBook") || 1;
+
+    if (inBook === "true") {
+        openBook(parseInt(lastBook));
+
+        setTimeout(() => {
+            showSection(lastSection || lastLang);
+        }, 100);
+    }
+};
+document.addEventListener("keydown", function(e) {
+
+    console.log("KEY:", e.key); // 👈 test
+
+    if (e.key === "ArrowRight") {
+        if (window.nextPage) {
+            window.nextPage();
+        }
+    }
+
+    if (e.key === "ArrowLeft") {
+        if (window.prevPage) {
+            window.prevPage();
+        }
+    }
+});
+let resizeTimeout;
+
+window.addEventListener("resize", () => {
+    clearTimeout(resizeTimeout);
+
+    resizeTimeout = setTimeout(() => {
+        openChapter(1, currentChapter, currentLang, page);
+    }, 300);
+});
+
+</script>
+<div id="measureBox" style="
+    position:absolute;
+    visibility:hidden;
+    padding:20px;
+    font-family:'Cinzel', serif;
+    line-height:1.6;
+    white-space: pre-wrap;
+"></div>
+
+</body>
+</html>

@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Knihovna příběhů</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Cinzel&display=swap" rel="stylesheet">
+
+<style>
+body {
+    margin: 0;
+    background: radial-gradient(circle at center, #111 0%, #000 100%);
+    font-family: 'Cinzel', serif;
+    color: #e0e0e0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* kouř */
+.smoke {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 200%;
+    height: 200%;
+    pointer-events: none;
+    z-index: 0;
+    background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.12), transparent 60%),
+                radial-gradient(circle at 70% 70%, rgba(255,255,255,0.10), transparent 60%);
+}
+
+/* obsah */
+.library, h1, .content, .footer {
+    position: relative;
+    z-index: 1;
+}
+
+.counter {
+    position: fixed;
+    top: 15px;
+    right: 25px;
+    color: #aaa;
+}
+
+h1 {
+    margin: 30px;
+    letter-spacing: 4px;
+    color: #bbb;
+}
+
+.library {
+    display: flex;
+    gap: 6px;
+    padding: 20px;
+    border-bottom: 4px solid #222;
+}
+
+.book {
+    width: 50px;
+    height: 320px;
+    background: linear-gradient(180deg, #111, #000);
+    border-left: 2px solid #444;
+    border-right: 1px solid #222;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    color: #bbb;
+}
+
+.wrap {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.top, .bottom {
+    display: flex;
+    justify-content: center;
+}
+
+.middle {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.spine {
+    writing-mode: vertical-rl;
+    font-size: 14px;
+}
+
+.vr {
+    width: 1px;
+    height: 120px;
+    background: linear-gradient(to bottom, transparent, #ccc, transparent);
+}
+
+.content {
+    display: none;
+    max-width: 700px;
+    padding: 20px;
+}
+
+.active {
+    display: block;
+}
+
+.back {
+    margin-top: 20px;
+    cursor: pointer;
+}
+
+.footer {
+    position: fixed;
+    bottom: 10px;
+    right: 20px;
+    font-size: 12px;
+    color: #777;
+}
+.footer {
+    position: fixed;
+    bottom: 10px;
+    right: 20px;
+    font-size: 12px;
+    color: #777;
+}
+
+/* 🔥 TLAČÍTKA */
+button {
+    background: #111;
+    color: #ccc;
+    border: 1px solid #555;
+    padding: 6px 12px;
+    cursor: pointer;
+    font-family: 'Cinzel', serif;
+}
+
+button:hover {
+    color: white;
+    border-color: #aaa;
+}
+#pageText {
+    transition: opacity 0.2s ease;
+}
+</style>
+
+</head>
+
+<body>
+
+<div class="smoke"></div>
+<div class="counter" id="counter">👁 načítám...</div>
+
+<h1>Knihovna příběhů</h1>
+
+<div class="library" id="library"></div>
+<div class="content" id="content"></div>
+
+<div class="footer">Crafted by Wrox & ChatGPT</div>
+
+<script>
+    
+const library = document.getElementById('library');
+const content = document.getElementById('content');
+let currentLang = "cz";
+let currentChapter = 1;
+const books = {
+    1: "Oheň a Voda",
+    2: "Druhá kniha",
+    3: "Třetí kniha",
+    4: "Čtvrtá kniha",
+    5: "Pátá kniha"
+};
+const chapterNames = {
+    1: {
+        1: "Ruiny Turaynu",
+        2: "Písky Pouště měsíčního světla",
+        3: "Temný les"
+    }
+};
+// 📚 vytvoření knih
+for (let i = 1; i <= 11; i++) {
+    const book = document.createElement('div');
+    book.className = 'book';
+    book.innerText = i;
+
+    book.onclick = () => openBook(i);
+    library.appendChild(book);
+}
+
+// 📖 otevření knihy
+function openBook(i) {
+    localStorage.setItem("lastBook", i);
+    localStorage.setItem("inBook", "true");
+
+    library.style.display = 'none';
+    content.classList.add('active');
+
+    if (i === 1) {
+        content.innerHTML = `
+            <h2>Kniha 1</h2>
+            <h3>${books[i] || "Neznámá kniha"}</h3>
+
+             <div id="bookMenu" style="display:flex; gap:10px; justify-content:center; margin:20px 0; flex-wrap:wrap;">
+                <button data-section="cz">🇨🇿 Příběh CZ</button>
+                <button data-section="en">🇬🇧 Story EN</button>
+                <button data-section="gallery">🖼 Galerie</button>
+                <button data-section="characters">👤 Postavy</button>
+            </div>
+
+            <div id="sectionContent">
+                <p style="text-align:center;">👆 Vyber si část knihy</p>
+            </div>
+
+            <div class="back" onclick="goBack()">← zpět do knihovny</div>
+        `;
+
+        // 🔥 JEDINÝ LISTENER PRO VŠECHNY TLAČÍTKA
+    document.getElementById("bookMenu").onclick = (e) => {
+        const btn = e.target.closest("button");
+        if (!btn) return;
+
+        const section = btn.dataset.section;
+        if (section) {
+            showSection(section);
+        }
+    };
+}
+
+    // 🔁 návrat do poslední sekce
+    const lastLang = localStorage.getItem("lastLang");
+    const lastSection = localStorage.getItem("lastSection");
+
+    if (i === 1 && (lastSection || lastLang)) {
+        setTimeout(() => {
+            showSection(lastSection || lastLang);
+        }, 50);
+    }
+}
+
+// 🔁 sekce knihy
+function showSection(section) {
+    
+    localStorage.setItem("lastSection", section);
+
+    const container = document.getElementById("sectionContent");
+    if (!container) return;
+
+    if (section === "cz") {
+        currentLang = "cz";
+        container.innerHTML = `<div id="chapterContent"></div>`;
+const savedChapter = localStorage.getItem("lastChapter_cz") || 1;
+
+setTimeout(() => {
+    openChapter(1, parseInt(savedChapter), "cz");
+}, 0);
+    }
+
+    else if (section === "en") {
+        currentLang = "en";
+        container.innerHTML = `<div id="chapterContent"></div>`;
+const savedChapter = localStorage.getItem("lastChapter_en") || 1;
+
+setTimeout(() => {
+    openChapter(1, parseInt(savedChapter), "en");
+}, 0);
+    }
+
+    else if (section === "gallery") {
+
+        const images = [
+    "obalka.jpg",
+    "goku.jpg",
+    "magie.jpg"
+];
+
+        let currentIndex = 0;
+
+        let html = `<h3>Galerie scén</h3>
+
+        <div style="display:flex; flex-wrap:wrap; gap:15px; justify-content:center;">`;
+
+        images.forEach((img, index) => {
+            html += `<img src="knihy/kniha1/scenes/${img}" 
+                          class="gallery-img" 
+                          data-index="${index}" 
+                          style="width:200px; cursor:pointer;">`;
+        });
+
+        html += `</div>
+
+        <div id="lightbox" 
+             style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; 
+             background:rgba(0,0,0,0.9); justify-content:center; align-items:center; flex-direction:column;">
+
+            <div style="position:absolute; top:20px; right:30px; font-size:30px; cursor:pointer;" onclick="closeLightbox()">✖</div>
+
+            <img id="lightbox-img" style="max-width:90%; max-height:80%;">
+
+            <div style="margin-top:20px;">
+                <button onclick="prevImage()">⟵</button>
+                <button onclick="nextImage()">⟶</button>
+            </div>
+        </div>`;
+
+        container.innerHTML = html;
+
+        document.querySelectorAll(".gallery-img").forEach(img => {
+            img.onclick = () => {
+                currentIndex = parseInt(img.dataset.index);
+                openLightbox();
+            };
+        });
+
+        window.openLightbox = function() {
+            document.getElementById("lightbox").style.display = "flex";
+            document.getElementById("lightbox-img").src = `knihy/kniha1/scenes/${images[currentIndex]}`;
+        };
+
+        window.closeLightbox = function() {
+            document.getElementById("lightbox").style.display = "none";
+        };
+
+        window.nextImage = function() {
+            currentIndex = (currentIndex + 1) % images.length;
+            openLightbox();
+        };
+
+        window.prevImage = function() {
+            currentIndex = (currentIndex - 1 + images.length) % images.length;
+            openLightbox();
+        };
+    }
+
+    else if (section === "characters") {
+
+        const characters = [
+    {
+        name: "Hrdina",
+        img: "hrdina.jpg",
+        cz: "Hlavní postava příběhu.",
+        en: "Main character of the story."
+    },
+    {
+        name: "Záporák",
+        img: "zapornak.jpg",
+        cz: "Nepřítel, který všechno komplikuje.",
+        en: "The enemy who complicates everything."
+    }
+];
+
+        let html = `<h3>Postavy</h3>
+
+        <div style="display:flex; flex-wrap:wrap; gap:20px; justify-content:center;">`;
+
+        characters.forEach(char => {
+            html += `
+                <div style="border:1px solid #555; padding:15px; width:200px; text-align:center;">
+                    <img src="knihy/kniha1/images/${char.img}" style="width:100%; margin-bottom:10px;">
+                    <h4>${char.name}</h4>
+                    <p><b>CZ:</b> ${char.cz}</p>
+                    <p><b>EN:</b> ${char.en}</p>
+                </div>
+            `;
+        });
+
+        html += `</div>`;
+
+        container.innerHTML = html;
+    }
+}
+
+// 📄 načítání kapitol
+function openChapter(book, chapter, lang, forcedPage = null) {
+    currentChapter = chapter;
+
+    localStorage.setItem("lastChapter_" + lang, chapter);
+    localStorage.setItem("lastLang", lang);
+
+    if (chapter < 1) chapter = 1;
+
+    const path = `knihy/kniha${book}/${lang}/kap${String(chapter).padStart(2,'0')}.txt`;
+        window.nextPage = function() {};
+        window.prevPage = function() {
+
+    const lastValid = parseInt(localStorage.getItem("lastValidChapter_" + lang)) || 1;
+
+    // 🔥 úplný začátek → stop
+    if (chapter === 1 && page === 0) return;
+
+    // mimo rozsah
+    if (chapter > lastValid) {
+        openChapter(book, lastValid, lang);
+        return;
+    }
+
+    if (page > 0) {
+        page--;
+        renderPage();
+    } else {
+        if (chapter > 1) {
+            // 👇 NE "last"
+            openChapter(book, chapter - 1, lang);
+        }
+    }
+};
+
+fetch(path)
+        .then(res => {
+            if (!res.ok) throw new Error();
+            return res.text();
+        })
+        .then(text => {
+            localStorage.setItem("lastValidChapter_" + lang, chapter);
+
+            let pages = [];
+            let size = 800;
+
+            for (let i = 0; i < text.length; i += size) {
+                pages.push(text.substring(i, i + size));
+            }
+
+            let page;
+            if (forcedPage === "last") {
+                page = pages.length - 1;
+            } else if (forcedPage !== null) {
+                page = forcedPage;
+            } else {
+                let saved = localStorage.getItem("page_" + lang + "_" + chapter);
+                page = saved !== null ? parseInt(saved) : 0;
+            }
+            // 🔥 ochrana
+            if (page < 0) page = 0;
+            if (page >= pages.length) page = pages.length - 1;
+
+            function renderPage() {
+                
+                const el = document.getElementById("pageText");
+                if (!el) return;
+
+                    el.style.opacity = 0;
+
+                setTimeout(() => {
+                    el.innerText = pages[page];
+                    el.style.opacity = 1;
+                }, 100);
+
+                const info = document.getElementById("pageInfo");
+                if (info) {
+                    info.innerText =
+                        (lang === 'cz' ? 'Stránka ' : 'Page ') +
+                        (page + 1) +
+                        " / " +
+                        pages.length;
+                }
+
+                localStorage.setItem("page_" + lang + "_" + chapter, page);
+
+                const btn = document.getElementById("nextBtn");
+                if (btn) {
+                    const lastValid = parseInt(localStorage.getItem("lastValidChapter_" + lang)) || 1;
+
+                    if (chapter >= lastValid && page === pages.length - 1) {
+                        btn.disabled = true;
+                        btn.style.opacity = "0.3";
+                    } else {
+                        btn.disabled = false;
+                        btn.style.opacity = "1";
+        }
+    }
+}
+
+            window.nextPage = function() {
+
+                const lastValid = parseInt(localStorage.getItem("lastValidChapter_" + lang)) || 1;
+
+                if (chapter > lastValid) return;
+
+                if (page < pages.length - 1) {
+                    page++;
+                    renderPage();
+                } else {
+                    localStorage.removeItem("page_" + lang + "_" + (chapter + 1));
+                    openChapter(book, chapter + 1, lang, 0);
+                }
+            };
+
+            renderPage();
+        })
+        .catch(() => {
+            const lastValid = parseInt(localStorage.getItem("lastValidChapter_" + lang)) || 1;
+
+            if (chapter === lastValid) {
+                const el = document.getElementById("pageText");
+                if (el) el.innerText = "❌ Kapitola nenalezena";
+
+                const btn = document.getElementById("nextBtn");
+                if (btn) {
+                    btn.style.opacity = "0.3";
+                    btn.disabled = true;
+                }
+
+                return;
+            }
+
+            openChapter(book, lastValid, lang, "last");
+});
+}
+function goToChapter(chapter) {
+    openChapter(1, chapter, currentLang);
+}
+async function getAvailableChapters(book, lang, max = 50) {
+    let available = [];
+
+    for (let i = 1; i <= max; i++) {
+        const path = `knihy/kniha${book}/${lang}/kap${String(i).padStart(2,'0')}.txt`;
+
+        try {
+            const res = await fetch(path, { method: "HEAD" });
+            if (res.ok) {
+                available.push(i);
+            } else {
+                break; // jakmile nenajde → konec
+            }
+        } catch {
+            break;
+        }
+    }
+
+    return available;
+}
+async function generateChapters() {
+    const list = document.getElementById("chapterList");
+
+    const chapters = await getAvailableChapters(1, currentLang);
+
+    let html = "";
+
+    chapters.forEach(i => {
+        let style = "margin:3px;";
+
+        if (i === currentChapter) {
+            style += " background:#888; color:#000;";
+        }
+
+        html += `<button style="${style}" onclick="goToChapter(${i})">${i}</button>`;
+    });
+
+    list.innerHTML = html;
+}
+async function toggleChapters() {
+    const list = document.getElementById("chapterList");
+
+    if (list.style.display === "none") {
+        list.style.display = "block";
+        await generateChapters();
+    } else {
+        list.style.display = "none";
+    }
+}
+
+// 🔙 zpět
+function goBack() {
+    localStorage.setItem("inBook", "false");
+    content.classList.remove('active');
+    library.style.display = 'flex';
+}
+window.onload = function() {
+    const lastLang = localStorage.getItem("lastLang");
+    const lastSection = localStorage.getItem("lastSection");
+    const inBook = localStorage.getItem("inBook");
+    const lastBook = localStorage.getItem("lastBook") || 1;
+
+    if (inBook === "true") {
+        openBook(parseInt(lastBook));
+
+        setTimeout(() => {
+            showSection(lastSection || lastLang);
+        }, 100);
+    }
+};
+document.addEventListener("keydown", function(e) {
+    if (e.key === "ArrowRight") {
+        if (typeof nextPage === "function") nextPage();
+    }
+    if (e.key === "ArrowLeft") {
+        if (typeof prevPage === "function") prevPage();
+    }
+});
+
+</script>
+
+</body>
+</html>
