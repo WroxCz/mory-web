@@ -255,6 +255,7 @@ button:hover {
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { query, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIza....",
@@ -276,6 +277,8 @@ window.doc = doc;
 window.replyMessage = replyMessage;
 window.deleteMessage = deleteMessage;
 window.updateDoc = updateDoc;
+window.query = query;
+window.orderBy = orderBy;
 
 </script>
 
@@ -1233,7 +1236,7 @@ async function addMessage(e) {
     await addDoc(collection(db, "messages"), {
         name: sanitize(name),
         text: sanitize(text),
-        time: new Date().toLocaleString(),
+        time: new Date(),
         reply: ""
     });
 
@@ -1244,7 +1247,8 @@ async function loadMessages() {
     const container = document.getElementById("messages");
     if (!container) return;
 
-    const querySnapshot = await getDocs(collection(db, "messages"));
+    const q = query(collection(db, "messages"), orderBy("time", "desc"));
+    const querySnapshot = await getDocs(q);
 
     let html = "";
 
@@ -1261,7 +1265,9 @@ async function loadMessages() {
         html += `
             <div style="border:1px solid #444; padding:20px; margin-bottom:20px;">
                 <div>✍ ${msg.name}</div>
-                <div style="font-size:11px; opacity:0.5;">${msg.time}</div>
+                <div style="font-size:11px; opacity:0.5;">
+                    ${msg.time?.toDate ? msg.time.toDate().toLocaleString() : msg.time}
+                </div>
                 <p>${msg.text}</p>
 
                 ${
