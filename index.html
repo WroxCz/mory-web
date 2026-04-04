@@ -1255,29 +1255,33 @@ async function loadMessages() {
         return;
     }
 
-    qquerySnapshot.forEach((docSnap) => {
-    const msg = docSnap.data();
+    querySnapshot.forEach((docSnap) => {   // ✅ opraveno
+        const msg = docSnap.data();
 
-    html += `
-        <div style="border:1px solid #444; padding:20px; margin-bottom:20px;">
-            <div>✍ ${msg.name}</div>
-            <div style="font-size:11px; opacity:0.5;">${msg.time}</div>
-            <p>${msg.text}</p>
+        html += `
+            <div style="border:1px solid #444; padding:20px; margin-bottom:20px;">
+                <div>✍ ${msg.name}</div>
+                <div style="font-size:11px; opacity:0.5;">${msg.time}</div>
+                <p>${msg.text}</p>
 
-            ${
-                msg.reply && msg.reply !== ""
-                ? `<div style="margin-top:10px; padding:10px; border-top:1px solid #555; color:#8affc1;">
-                        💬 Odpověď: ${msg.reply}
-                   </div>`
-                : ""
-            }
+                ${
+                    msg.reply && msg.reply !== ""
+                    ? `<div style="margin-top:10px; padding:10px; border-top:1px solid #555; color:#8affc1;">
+                            💬 Odpověď: ${msg.reply}
+                       </div>`
+                    : ""
+                }
 
-            <button onclick="replyMessage('${docSnap.id}')">
-                💬 Odpovědět
-            </button>
-        </div>
-    `;
-});
+                <button onclick="replyMessage('${docSnap.id}')">
+                    💬 Odpovědět
+                </button>
+
+                <button onclick="deleteMessage('${docSnap.id}')">
+                    🗑 Smazat
+                </button>
+            </div>
+        `;
+    });
 
     container.innerHTML = html;
 }
