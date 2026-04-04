@@ -254,7 +254,7 @@ button:hover {
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIza....",
@@ -1230,7 +1230,8 @@ async function addMessage(e) {
     await addDoc(collection(db, "messages"), {
         name: sanitize(name),
         text: sanitize(text),
-        time: new Date().toLocaleString()
+        time: new Date().toLocaleString(),
+        reply: ""
     });
 
     e.target.reset();
@@ -1252,22 +1253,48 @@ async function loadMessages() {
     }
 
     querySnapshot.forEach((docSnap) => {
-        const msg = docSnap.data();
+    const msg = docSnap.data();
 
-        html += `
-            <div style="border:1px solid #444; padding:20px; margin-bottom:20px;">
-                <div>✍ ${msg.name}</div>
-                <div style="font-size:11px; opacity:0.5;">${msg.time}</div>
-                <p>${msg.text}</p>
+    html += `
+        <div style="border:1px solid #444; padding:20px; margin-bottom:20px;">
+            <div>✍ ${msg.name}</div>
+            <div style="font-size:11px; opacity:0.5;">${msg.time}</div>
+            <p>${msg.text}</p>
 
-                <button onclick="deleteMessage('${docSnap.id}')">
-                    ❌ Smazat
-                </button>
-            </div>
-        `;
-    });
+            ${
+                msg.reply
+                ? `<div style="margin-top:10px; padding:10px; border-top:1px solid #555;">
+                        💬 Odpověď: ${msg.reply}
+                   </div>`
+                : ""
+            }
+
+            <button onclick="replyMessage('${docSnap.id}')">
+                💬 Odpovědět
+            </button>
+        </div>
+    `;
+});
 
     container.innerHTML = html;
+}
+async function replyMessage(id) {
+    const pass = prompt("🔒 Admin heslo:");
+
+    if (pass !== ADMIN_PASSWORD) {
+        alert("❌ Špatné heslo");
+        return;
+    }
+
+    const reply = prompt("💬 Napiš odpověď:");
+
+    if (!reply) return;
+
+    await updateDoc(doc(db, "messages", id), {
+        reply: sanitize(reply)
+    });
+
+    loadMessages();
 }
 async function deleteMessage(id) {
     const pass = prompt("🔒 Zadej heslo pro smazání:");
@@ -1283,6 +1310,24 @@ async function deleteMessage(id) {
     } catch (e) {
         console.error("❌ CHYBA MAZÁNÍ:", e);
     }
+
+    loadMessages();
+}
+async function replyMessage(id) {
+    const pass = prompt("🔒 Admin heslo:");
+
+    if (pass !== ADMIN_PASSWORD) {
+        alert("❌ Špatné heslo");
+        return;
+    }
+
+    const reply = prompt("💬 Napiš odpověď:");
+
+    if (!reply) return;
+
+    await updateDoc(doc(db, "messages", id), {
+        reply: sanitize(reply)
+    });
 
     loadMessages();
 }
