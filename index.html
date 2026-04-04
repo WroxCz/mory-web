@@ -1247,21 +1247,25 @@ async function loadMessages() {
         return;
     }
 
-    querySnapshot.forEach((doc) => {
-        const msg = doc.data();
+    querySnapshot.forEach((docSnap) => {
+        const msg = docSnap.data();
 
         html += `
             <div style="border:1px solid #444; padding:20px; margin-bottom:20px;">
                 <div>✍ ${msg.name}</div>
                 <div style="font-size:11px; opacity:0.5;">${msg.time}</div>
                 <p>${msg.text}</p>
+
+                <button onclick="deleteMessage('${docSnap.id}')">
+                    ❌ Smazat
+                </button>
             </div>
         `;
     });
 
     container.innerHTML = html;
 }
-function deleteMessage(index) {
+async function deleteMessage(id) {
     const pass = prompt("🔒 Zadej heslo pro smazání:");
 
     if (pass !== ADMIN_PASSWORD) {
@@ -1269,11 +1273,7 @@ function deleteMessage(index) {
         return;
     }
 
-    let messages = JSON.parse(localStorage.getItem("messages") || "[]");
-
-    messages.splice(index, 1);
-
-    localStorage.setItem("messages", JSON.stringify(messages));
+    await deleteDoc(doc(db, "messages", id));
 
     loadMessages();
 }
