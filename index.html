@@ -268,8 +268,24 @@
             100% {
                 opacity: 0;
             }
+            
         }
+@keyframes bookPulse {
+    0% {
+        box-shadow: 0 0 20px rgba(255, 200, 100, 0.25),
+                    0 0 40px rgba(255, 150, 50, 0.2);
+    }
 
+    40%, 60% {
+        box-shadow: 0 0 65px rgba(255, 200, 100, 0.75),
+                    0 0 130px rgba(255, 150, 50, 0.55);
+    }
+
+    100% {
+        box-shadow: 0 0 20px rgba(255, 200, 100, 0.25),
+                    0 0 40px rgba(255, 150, 50, 0.2);
+    }
+}
         .lightFlash {
             position: fixed;
             top: 0;
@@ -362,7 +378,7 @@
     <script>
 
         const ADMIN_PASSWORD = "Vlk2Himilko"; // heslo pro web
-        const DEV_MODE = true; // 🔥 test režim: false neaktivní true aktivní
+        const DEV_MODE = false; // 🔥 test režim: false neaktivní true aktivní
 
         if (DEV_MODE) {
             localStorage.removeItem("libraryUnlocked");
@@ -1309,10 +1325,51 @@
 
     // ✅ pokud už je odemčeno → rovnou knihovna (BEZ HESLA)
     if (localStorage.getItem("libraryUnlocked") === "true") {
-        content.classList.remove('active');
-        library.style.display = 'flex';
-        return;
-    }
+
+    // 👇 zobraz welcome místo rovnou knihovny
+    content.innerHTML = `
+        <div style="text-align:center; position:relative;">
+
+            <div style="position:relative; display:inline-block;">
+
+                <img src="webimages/morywelcome.jpg" 
+                     class="fade-in"
+                     style="max-width:90%;">
+
+                <div id="bookHotspot" style="
+                    position:absolute;
+                    bottom:47%;
+                    left:49%;
+                    transform:translateX(-50%);
+                    width:150px;
+                    height:85px;
+                    cursor:pointer;
+                    animation: bookPulse 2.0s ease-in-out infinite;
+                "></div>
+
+            </div>
+        </div>
+    `;
+
+    content.classList.add('active');
+    library.style.display = 'none';
+
+    document.getElementById("bookHotspot").onclick = () => {
+
+        const flash = document.createElement("div");
+        flash.className = "lightFlash";
+        document.body.appendChild(flash);
+
+        setTimeout(() => {
+            flash.remove();
+
+            content.classList.remove('active');
+            library.style.display = 'flex';
+        }, 600);
+    };
+
+    return;
+}
 
     const message = currentLang === "cz"
         ? "🔒 Pouze ti, kdo znají tajemství knihovny, mohou vstoupit...\n\nZadej heslo:"
@@ -1327,13 +1384,55 @@
         const successMsg = currentLang === "cz"
             ? "📖 Brána se otevírá...\nVítej, poutníku."
             : "📖 The gate opens...\nWelcome, traveler.";
+await lightEffect(successMsg);
 
-        await lightEffect(successMsg);
+// 👇 místo okamžité knihovny zobraz welcome obrázek
+content.innerHTML = `
+    <div style="text-align:center; position:relative;">
 
-        // ✅ zobraz knihovnu
+        <div style="position:relative; display:inline-block;">
+
+            <img src="webimages/morywelcome.jpg" 
+                 class="fade-in"
+                 style="max-width:90%;">
+
+            <!-- 🔥 klikací oblast knih -->
+            <div id="bookHotspot" style="
+    position:absolute;
+    bottom:47%;
+    left:49%;
+    transform:translateX(-50%);
+    width:150px;
+    height:85px;
+    cursor:pointer;
+    animation: bookPulse 4.5s infinite;
+"
+onmouseover="this.style.boxShadow='0 0 80px rgba(255,200,100,0.6)'"
+onmouseout="this.style.boxShadow=''">
+</div>
+
+        </div>            
+    </div>
+`;
+
+content.classList.add('active');
+library.style.display = 'none';
+
+// 👇 kliknutí → otevře knihovnu
+document.getElementById("bookHotspot").onclick = () => {
+
+    const flash = document.createElement("div");
+    flash.className = "lightFlash";
+    document.body.appendChild(flash);
+
+    setTimeout(() => {
+        flash.remove();
+
         content.classList.remove('active');
         library.style.display = 'flex';
-
+    }, 600);
+};
+        
     } else {
 
         const errorMsg = currentLang === "cz"
@@ -1465,7 +1564,7 @@ if (section === "about") {
             flex-direction:column;
             gap:10px;
             margin:30px 0;
-            background:rgba(0,0,0,0.5);
+            background:rgba(,0,0,0.5);
             padding:20px;
             border:1px solid #444;
             box-shadow:0 0 10px rgba(255,255,255,0.2);
