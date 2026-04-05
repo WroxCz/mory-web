@@ -1,528 +1,678 @@
 <!DOCTYPE html>
 <html lang="cs">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Knihovna příběhů</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Knihovna příběhů</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Cinzel&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel&display=swap" rel="stylesheet">
 
-<style>
-body {
-    margin: 0;
-    background: radial-gradient(circle at center, #111 0%, #000 100%);
-    font-family: 'Cinzel', serif;
-    color: #e0e0e0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
+    <style>
+        body {
+            margin: 0;
+            background: radial-gradient(circle at center, #111 0%, #000 100%);
+            font-family: 'Cinzel', serif;
+            color: #e0e0e0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
 
-/* kouř */
-.smoke {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 200%;
-    height: 200%;
-    pointer-events: none;
-    z-index: 0;
-    background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.12), transparent 60%),
-                radial-gradient(circle at 70% 70%, rgba(255,255,255,0.10), transparent 60%);
-}
-@keyframes glowPulse {
-    0% {
-        box-shadow: 
-            0 0 20px rgba(255,140,0,0.2),
-            0 0 50px rgba(255,80,0,0.1);
-    }
-    50% {
-        box-shadow: 
-            0 0 35px rgba(255,160,0,0.35),
-            0 0 80px rgba(255,100,0,0.25);
-    }
-    100% {
-        box-shadow: 
-            0 0 20px rgba(255,140,0,0.2),
-            0 0 50px rgba(255,80,0,0.1);
-    }
-}
+        /* kouř */
+        .smoke {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 200%;
+            height: 200%;
+            pointer-events: none;
+            z-index: 0;
+            background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.12), transparent 60%),
+                radial-gradient(circle at 70% 70%, rgba(255, 255, 255, 0.10), transparent 60%);
+        }
 
-/* obsah */
-.library, h1, .content, .footer {
-    position: relative;
-    z-index: 1;
-}
+        @keyframes glowPulse {
+            0% {
+                box-shadow:
+                    0 0 20px rgba(255, 140, 0, 0.2),
+                    0 0 50px rgba(255, 80, 0, 0.1);
+            }
 
-.counter {
-    position: fixed;
-    top: 15px;
-    right: 25px;
-    color: #aaa;
-}
-.langSwitch {
-    position: fixed;
-    top: 40px;
-    right: 25px;
-    font-size: 18px;
-    cursor: pointer;
-}
+            50% {
+                box-shadow:
+                    0 0 35px rgba(255, 160, 0, 0.35),
+                    0 0 80px rgba(255, 100, 0, 0.25);
+            }
 
-.langSwitch span {
-    margin-left: 5px;
-    opacity: 0.7;
-    transition: 0.2s;
-}
+            100% {
+                box-shadow:
+                    0 0 20px rgba(255, 140, 0, 0.2),
+                    0 0 50px rgba(255, 80, 0, 0.1);
+            }
+        }
 
-.langSwitch span:hover {
-    opacity: 1;
-    transform: scale(1.2);
-}
-.langSwitch span.active {
-    color: white;
-    font-weight: bold;
-}
-.langSwitch img {
-    width: 25px;
-    cursor: pointer;
-    margin-left: 5px;
-    opacity: 0.7;
-}
+        /* obsah */
+        .library,
+        h1,
+        .content,
+        .footer {
+            position: relative;
+            z-index: 1;
+        }
 
-.langSwitch img:hover {
-    opacity: 1;
-    transform: scale(1.2);
-}
-h1 {
-    margin: 30px;
-    letter-spacing: 4px;
-    color: #bbb;
-}
+        .counter {
+            position: fixed;
+            top: 15px;
+            right: 25px;
+            color: #aaa;
+        }
 
-.library {
-    display: flex;
-    gap: 6px;
-    padding: 20px;
-    border-bottom: 4px solid #222;
-}
+        .langSwitch {
+            position: fixed;
+            top: 40px;
+            right: 25px;
+            font-size: 18px;
+            cursor: pointer;
+        }
 
-.book {
-    transition: 0.3s;
-    width: 50px;
-    height: 320px;
-    background: linear-gradient(180deg, #111, #000);
-    border-left: 2px solid #444;
-    border-right: 1px solid #222;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    cursor: pointer;
-    color: #bbb;
-}
-.book:hover {
-    transform: scale(1.05);
-    box-shadow: 0 0 20px rgba(255,255,255,0.2);
-}
-.langSwitch span.active {
-    color: white;
-    font-weight: bold;
-    text-shadow: 0 0 10px rgba(255,255,255,0.5);
-}
+        .langSwitch span {
+            margin-left: 5px;
+            opacity: 0.7;
+            transition: 0.2s;
+        }
 
-.wrap {
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-}
+        .langSwitch span:hover {
+            opacity: 1;
+            transform: scale(1.2);
+        }
 
-.top, .bottom {
-    text-align: center;
-    font-size: 12px;
-}
+        .langSwitch span.active {
+            color: white;
+            font-weight: bold;
+        }
 
-.middle {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
+        .langSwitch img {
+            width: 25px;
+            cursor: pointer;
+            margin-left: 5px;
+            opacity: 0.7;
+        }
 
-.spine {
-    writing-mode: vertical-rl;
-    transform: rotate(0deg);
-    font-size: 14px;
-    text-align: center;
-}
+        .langSwitch img:hover {
+            opacity: 1;
+            transform: scale(1.2);
+        }
 
-.vr {
-    width: 1px;
-    height: 120px;
-    background: linear-gradient(to bottom, transparent, #ccc, transparent);
-}
+        h1 {
+            margin: 30px;
+            letter-spacing: 4px;
+            color: #bbb;
+        }
 
-.content {
-    transition: opacity 0.3s ease;
-    display: none;
-    max-width: 700px;
-    padding: 20px;
-}
+        .library {
+            display: flex;
+            gap: 6px;
+            padding: 20px;
+            border-bottom: 4px solid #222;
+        }
 
-.active {
-    display: block;
-}
+        .book {
+            transition: 0.3s;
+            width: 50px;
+            height: 320px;
+            background: linear-gradient(180deg, #111, #000);
+            border-left: 2px solid #444;
+            border-right: 1px solid #222;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            color: #bbb;
+        }
 
-.back {
-    margin-top: 20px;
-    cursor: pointer;
-}
+        .book:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+        }
 
-.footer {
-    position: fixed;
-    bottom: 10px;
-    right: 20px;
-    font-size: 12px;
-    color: #777;
-}
+        .langSwitch span.active {
+            color: white;
+            font-weight: bold;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+        }
 
-/* 🔥 TLAČÍTKA */
-button {
-    transition: 0.3s;
-    background: #111;
-    color: #ccc;
-    border: 1px solid #555;
-    padding: 6px 12px;
-    cursor: pointer;
-    font-family: 'Cinzel', serif;
-}
+        .wrap {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
 
-button:hover {
-    transform: scale(1.05);
-    box-shadow: 0 0 15px rgba(255,255,255,0.2);
-    color: white;
-    border-color: #aaa;
-}
-#pageText {
-    transition: opacity 0.2s ease;
-    min-height: 400px;
-    text-align: justify;
-    line-height: 1.6;
-    text-indent: 2em;
-    text-transform: none;
-    font-family: Georgia, serif;
-}
-#sectionContent {
-    transition: opacity 0.2s ease;
-} 
-#messages div:hover {
-    box-shadow: 0 0 25px rgba(0,255,150,0.2);
-    transform: scale(1.01);
-    transition: 0.3s;
-}
-.textBlock {
-    font-family: Georgia, serif;
-    font-size: 15px;
-    line-height: 1.7;
-    text-align: justify;
-    color: #ddd;
-} 
+        .top,
+        .bottom {
+            text-align: center;
+            font-size: 12px;
+        }
 
-</style>
+        .middle {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .spine {
+            writing-mode: vertical-rl;
+            transform: rotate(0deg);
+            font-size: 14px;
+            text-align: center;
+        }
+
+        .vr {
+            width: 1px;
+            height: 120px;
+            background: linear-gradient(to bottom, transparent, #ccc, transparent);
+        }
+
+        .content {
+            transition: opacity 0.3s ease;
+            display: none;
+            max-width: 700px;
+            padding: 20px;
+        }
+
+        .active {
+            display: block;
+        }
+
+        .back {
+            margin-top: 20px;
+            cursor: pointer;
+        }
+
+        .footer {
+            position: fixed;
+            bottom: 10px;
+            right: 20px;
+            font-size: 12px;
+            color: #777;
+        }
+
+        /* 🔥 TLAČÍTKA */
+        button {
+            transition: 0.3s;
+            background: #111;
+            color: #ccc;
+            border: 1px solid #555;
+            padding: 6px 12px;
+            cursor: pointer;
+            font-family: 'Cinzel', serif;
+        }
+
+        button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
+            color: white;
+            border-color: #aaa;
+        }
+
+        #pageText {
+            transition: opacity 0.2s ease;
+            min-height: 400px;
+            text-align: justify;
+            line-height: 1.6;
+            text-indent: 2em;
+            text-transform: none;
+            font-family: Georgia, serif;
+        }
+
+        #sectionContent {
+            transition: opacity 0.2s ease;
+        }
+
+        #messages div:hover {
+            box-shadow: 0 0 25px rgba(0, 255, 150, 0.2);
+            transform: scale(1.01);
+            transition: 0.3s;
+        }
+
+        .textBlock {
+            font-family: Georgia, serif;
+            font-size: 15px;
+            line-height: 1.7;
+            text-align: justify;
+            color: #ddd;
+        }
+
+        .darkFlash {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, rgba(0, 0, 0, 0.95) 0%, black 100%);
+            z-index: 9999;
+            opacity: 0;
+            animation: darkPulse 0.6s ease;
+        }
+
+        @keyframes darkPulse {
+            0% {
+                opacity: 0;
+            }
+
+            40% {
+                opacity: 1;
+            }
+
+            100% {
+                opacity: 0;
+            }
+        }
+
+        .lightFlash {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, rgba(255, 220, 150, 0.25) 0%, rgba(0, 0, 0, 0.9) 70%);
+            z-index: 9999;
+            opacity: 0;
+            animation: lightPulse 0.8s ease;
+        }
+
+        @keyframes lightPulse {
+            0% {
+                opacity: 0;
+            }
+
+            40% {
+                opacity: 1;
+            }
+
+            100% {
+                opacity: 0;
+            }
+        }
+    </style>
 
 </head>
 
 <body>
 
-<div class="smoke"></div>
-<div class="counter" id="visits">👁 načítám...</div>
-<div class="langSwitch">
-    <span onclick="setLang('cz')">🇨🇿</span>
-    <span onclick="setLang('en')">🇬🇧</span>
-</div>
-<h1 id="title"></h1>
-<div style="margin-bottom:20px;">
-    <button onclick="showMainSection('about')">👤</button>
-    <button onclick="showMainSection('contact')">✉</button>
-    <button onclick="showMainSection('library')">📚</button>
-</div>
+    <div class="smoke"></div>
+    <div class="counter" id="visits">👁 načítám...</div>
+    <div class="langSwitch">
+        <span onclick="setLang('cz')">🇨🇿</span>
+        <span onclick="setLang('en')">🇬🇧</span>
+    </div>
+    <h1 id="title"></h1>
+    <div style="margin-bottom:20px;">
+        <button onclick="showMainSection('about')">👤</button>
+        <button onclick="showMainSection('contact')">✉</button>
+        <button onclick="showMainSection('library')">📚</button>
+    </div>
 
-<div class="library" id="library"></div>
-<div class="content" id="content"></div>
+    <div class="library" id="library"></div>
+    <div class="content" id="content"></div>
 
-<div class="footer" id="footer">Website by Wrox. Story and pictures by Moryana. </div>
+    <div class="footer" id="footer">Website by Wrox. Story and pictures by Moryana. </div>
 
-<div class="textBlock"></div>
+    <div class="textBlock"></div>
 
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-import { query, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { query, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-const firebaseConfig = {
-  apiKey: "AIza....",
-  authDomain: "wrox-61299.firebaseapp.com",
-  projectId: "wrox-61299",
-  storageBucket: "wrox-61299.appspot.com",
-  messagingSenderId: "...",
-  appId: "..."
-};
+        const firebaseConfig = {
+            apiKey: "AIza....",
+            authDomain: "wrox-61299.firebaseapp.com",
+            projectId: "wrox-61299",
+            storageBucket: "wrox-61299.appspot.com",
+            messagingSenderId: "...",
+            appId: "..."
+        };
 
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-window.db = db;
-window.getDocs = getDocs;
-window.collection = collection;
-window.addDoc = addDoc;
-window.deleteDoc = deleteDoc;
-window.doc = doc;
-window.replyMessage = replyMessage;
-window.deleteMessage = deleteMessage;
-window.updateDoc = updateDoc;
-window.query = query;
-window.orderBy = orderBy;
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        window.db = db;
+        window.getDocs = getDocs;
+        window.collection = collection;
+        window.addDoc = addDoc;
+        window.deleteDoc = deleteDoc;
+        window.doc = doc;
+        
+        window.updateDoc = updateDoc;
+        window.query = query;
+        window.orderBy = orderBy;
 
-</script>
+    </script>
 
-<script>
+    <script>
 
-const ADMIN_PASSWORD = "Vlk2Himilko"; // heslo pro web
-    
-// 🔥 počítadlo návštěv
-let count = localStorage.getItem("visits");
+        const ADMIN_PASSWORD = "Vlk2Himilko"; // heslo pro web
+        const DEV_MODE = true; // 🔥 zapni při testování, false neaktivní true aktivní
 
-if (!count) {
-    count = 0;
-} else {
-    count = parseInt(count);
-}
+        if (DEV_MODE) {
+            localStorage.removeItem("libraryUnlocked");
+        }
 
-count++;
+        // 🔥 počítadlo návštěv
+        let count = localStorage.getItem("visits");
 
-localStorage.setItem("visits", count);
+        if (!count) {
+            count = 0;
+        } else {
+            count = parseInt(count);
+        }
 
-const library = document.getElementById('library');
-const content = document.getElementById('content');
-let currentLang = "cz";
-const UI = {
-    cz: {
-    about: "Něco málo o mně",
-    contact: "Nechte vzkaz",
-    library: "Knihovna",
-    story: "Příběh",
-    gallery: "Galerie",
-    characters: "Postavy",
-    back: "← zpět do knihovny", // 🔥 tady čárka
-    guestbook: "Temná kniha vzkazů",
-    formName: "Jméno poutníka...",
-    formMessage: "Zanech svůj vzkaz do kroniky...",
-    formButton: "Zapsat do knihy",
-    emptyMessages: "📜 Kronika je zatím prázdná...",
-    page: "Stránka",
-    unknown: "Neznámá kniha",
-    chapters: "Kapitoly",
-    emptyPage: "⚠ prázdná stránka",
-    choosePart: "👆 Vyber si část knihy",
-    title: "Knihovna příběhů",
-    visitOne: "návštěva",
-    visitMany: "návštěv",
-    intro: `
+        count++;
+
+        localStorage.setItem("visits", count);
+
+        const library = document.getElementById('library');
+        const content = document.getElementById('content');
+        let currentLang = "cz";
+        const UI = {
+            cz: {
+                about: "Něco málo o mně",
+                contact: "Nechte vzkaz",
+                library: "Knihovna",
+                story: "Příběh",
+                gallery: "Galerie",
+                characters: "Postavy",
+                back: "← zpět do knihovny", // 🔥 tady čárka
+                guestbook: "Temná kniha vzkazů",
+                formName: "Jméno poutníka...",
+                formMessage: "Zanech svůj vzkaz do kroniky...",
+                formButton: "Zapsat do knihy",
+                emptyMessages: "📜 Kronika je zatím prázdná...",
+                page: "Stránka",
+                unknown: "Neznámá kniha",
+                chapters: "Kapitoly",
+                emptyPage: "⚠ prázdná stránka",
+                choosePart: "👆 Vyber si část knihy",
+                title: "Knihovna příběhů",
+                visitOne: "návštěva",
+                visitMany: "návštěv",
+                intro: `
         Vítejte, poutníci.<br>
         Nechť vás tyto stránky provedou příběhem.<br>
         Máte-li přání či připomínky,<br>
         zanechte svůj vzkaz v této temné kronice.`,
-    signature: "— Wrox, Strážce knihovny",
-    
-},
-    en: {
-        about: "About me",
-        contact: "Leave a message",
-        library: "Library",
-        story: "Story",
-        gallery: "Gallery",
-        characters: "Characters",
-        back: "← back to library",
-        guestbook: "Dark guestbook",
-        formName: "Your name...",
-        formMessage: "Leave your message...",
-        formButton: "Write into the book",
-        emptyMessages: "📜 The chronicle is empty...",
-        page: "Page",
-        unknown: "Unknown book",
-        chapters: "Chapters",
-        emptyPage: "⚠ empty page",
-        choosePart: "👆 Choose a section of the book",
-        title: "Library of Stories",
-        visitOne: "visit",
-        visitMany: "visits",
-        intro: `
+                signature: "— Wrox, Strážce knihovny",
+
+            },
+            en: {
+                about: "About me",
+                contact: "Leave a message",
+                library: "Library",
+                story: "Story",
+                gallery: "Gallery",
+                characters: "Characters",
+                back: "← back to library",
+                guestbook: "Dark guestbook",
+                formName: "Your name...",
+                formMessage: "Leave your message...",
+                formButton: "Write into the book",
+                emptyMessages: "📜 The chronicle is empty...",
+                page: "Page",
+                unknown: "Unknown book",
+                chapters: "Chapters",
+                emptyPage: "⚠ empty page",
+                choosePart: "👆 Choose a section of the book",
+                title: "Library of Stories",
+                visitOne: "visit",
+                visitMany: "visits",
+                intro: `
             Welcome, travelers.<br>
             May these pages guide you through the story.<br>
             If you have any wishes or feedback,<br>
             leave your message in this dark chronicle.`,
-        signature: "— Wrox, Keeper of the Library",
-    }
-};
-function t(key) {
-    return UI[currentLang][key] || key;
+                signature: "— Wrox, Keeper of the Library",
+            }
+        };
+        function t(key) {
+            return UI[currentLang][key] || key;
+        }
+        let currentChapter = 1;
+        let page = 0;
+        const books = {
+            1: {
+                cz: "Oheň a Voda",
+                en: "Fire and Water"
+            },
+            2: {
+                cz: "Neznámá kniha",
+                en: "Unknown book"
+            },
+            3: {
+                cz: "Neznámá kniha",
+                en: "Unknown book"
+            },
+            4: {
+                cz: "Neznámá kniha",
+                en: "Unknown book"
+            },
+            5: {
+                cz: "Neznámá kniha",
+                en: "Unknown book"
+            },
+        };
+        const bookIcons = {
+            1: "🔥💧",
+            2: "📖"
+        };
+        const readyBooks = [1]; // sem budeš přidávat další hotové knihy
+        const chapterNames = {
+            1: {
+                1: "Ruiny Turaynu",
+                2: "Písky Pouště měsíčního světla",
+                3: "Temný les"
+            }
+        };
+
+        const characters = [
+            {
+                name: "Rowena",
+                img: "Rowena.jpg",
+                role: {
+                    cz: "Léčitelka",
+                    en: "Healer"
+                },
+                cz: "Rowena pochází z Kastletonu, rušného přístavního města na kontinentu Laslan, kde se od dětství pohybovala mezi lidmi nejrůznějších kultur. Už jako malá byla vybrána k výcviku ve Věži čistého světla, což z ní učinilo léčitelku s hlubokými znalostmi starých textů a rituálů. Její povaha je spíše introspektivní, tichá a pečující; často upřednostňuje druhé před sebou.",
+                en: "Rowena comes from Kastleton, a bustling port city on the continent of Laslan, where she has been surrounded by people of all cultures since childhood. She was chosen as a young girl to train at the Tower of Pure Light, which made her a healer with a deep knowledge of ancient texts and rituals. Her nature is rather introspective, quiet, and caring; she often puts others before herself."
+            },
+            {
+                name: "Aaliyah",
+                img: "Aaliyah.jpg",
+                role: {
+                    cz: "Ohnivá mágyně",
+                    en: "Fire mage"
+                },
+                cz: "Aaliyah pochází z přístavního města Vienta na kontinentu Stonegrad, kde se lidé od dětství učí vnímat oheň jako dar, nikoli prokletí. Je mágyní ohně, která prošla výcvikem ve Svatyni Rudého dechu. Aaliyah je impulzivní, odvážná a nezávislá, často mluví rychleji, než myslí a její sarkastické poznámky zlehčují i ty nejtemnější chvíle.",
+                en: "Aaliyah comes from the port city of Vienta on the continent of Stonegrad, where people are taught from childhood to see fire as a gift, not a curse. She is a fire mage who trained at the Shrine of Red Breath. Impulsive, bold, and independent, Aaliyah often speaks faster than she thinks, and her sarcastic remarks lighten even the darkest moments."
+            },
+            {
+                name: "James",
+                img: "James.jpg",
+                role: {
+                    cz: "Vrah",
+                    en: "Assassin"
+                },
+                cz: "James se narodil v městě Herba na kontinentu Talandre, kde život vrahů a špehů formuje chladnou disciplínu. Je nájemným vrahem a mistrem boje na blízko, vládne dýkami, kopím i stínovou magií. Jeho povaha je klidná, tichá a pozorující, nikdy nemluví zbytečně. ",
+                en: "James was born in the city of Herba on the continent of Talandre, where the life of assassins and spies shapes a cold discipline. He is a hired assassin and a master of close combat, wielding daggers, spears and shadow magic. His nature is calm, quiet and observant, never speaking unnecessarily."
+            },
+            {
+                name: "Hugh",
+                img: "Hugh.jpg",
+                role: {
+                    cz: "Vrah",
+                    en: "Assassin"
+                },
+                cz: "Mizerik, mladší bratr Jamese, pochází z Herby a vyrůstal ve stejném prostředí jako on. Je nájemným vrahem, který ovládá boj s mečem, kopím i stínovou magii, ale na rozdíl od Jamese jedná impulzivněji a s větší krutostí. Je vášnivý, věrný, prudký v rozhodování a zároveň velmi škodolibý. ",
+                en: "Mizerik, James' younger brother, comes from Herba and grew up in the same environment as him. He is a hired assassin who masters sword, spear and shadow magic, but unlike James, he acts more impulsively and with greater cruelty. He is passionate, loyal, quick in decision-making and at the same time very malicious."
+            },
+            {
+                name: "Thomas",
+                img: "Thomas.jpg",
+                role: {
+                    cz: "Rytíř",
+                    en: "Knight"
+                },
+                cz: "Thomas, rytíř hradu Kamenný strážce na kontinentu Stonegard, byl vychován v přísném vojenském řádu, kde čest, disciplína a síla znamenaly vše. Je zkušeným bojovníkem, který používá meč a kopí a dokáže vést muže v poli. Je čestný, hrdý, tvrdohlavý a prudký v rozhodování, zároveň však silně loajální a odhodlaný chránit nevinné, i za cenu vlastního života. ",
+                en: "Thomas, a knight of the Stoneguard Castle on the continent of Stonegard, was raised in a strict military order where honor, discipline, and strength meant everything. He is a skilled warrior who wields sword and spear and can lead men in the field. He is honest, proud, stubborn, and quick-witted, yet fiercely loyal and determined to protect the innocent, even at the cost of his own life."
+            },
+            {
+                name: "William",
+                img: "William.jpg",
+                role: {
+                    cz: "Kapitán rytířů",
+                    en: "Captain of the knights"
+                },
+                cz: "William pochází z Herby. Byl převelen do Vienty a později hradu Kamenný strážce, kde působí jako kapitán rytířů. Právě tam se setkal s Thomasem a rychle se z nich stali nejlepší přátelé.  Povahou je okouzlující, vtipný a inteligentní, avšak za jeho šarmem se skrývá sobectví a manipulativnost.",
+                en: "William comes from Herba. He was transferred to Vienta and later to the Stoneguard Castle, where he serves as the captain of the knights. It was there that he met Thomas and they quickly became best friends. He is charming, witty and intelligent, but behind his charm lies selfishness and manipulation."
+            },
+            {
+                name: "Brienne",
+                img: "Brienne.jpg",
+                role: {
+                    cz: "Stín",
+                    en: "Shadow"
+                },
+                cz: "Brienne je bytost stínu, která na sebe bere podobu mladé a křehké léčitelky z Věži čistého světla. Je krutá, manipulativní a pomstychtivá, vládne stínovou magií, magií proměny a psychickou kontrolou. ",
+                en: "Brienne is a being of the shadow who takes the form of a young and fragile healer from the Tower of Pure Light. She is cruel, manipulative and vengeful, she masters shadow magic, transformation magic and psychic control."
+            },
+            {
+                name: "Zarveth",
+                img: "Zarveth.jpg",
+                role: {
+                    cz: "Stín",
+                    en: "Shadow"
+                },
+                cz: "Zarveth je bytost stínu a nejvěrnější služebník Morr’kalila. Působí jako děsivý velitel a nelítostný bojovník. Je krutý, dominantní a manipulativní, vládne stínovou magií a vede armády temnoty. V boji používá meč a kopí a disponuje obrovskou nelidskou silou. Neuznává rovnocennost, jen podřízenost.",
+                en: "Zarveth is a being of the shadow and the most loyal servant of Morr'kalil. He acts as a terrifying commander and a ruthless warrior. He is cruel, dominant and manipulative, wielding shadow magic and leading armies of darkness. He uses a sword and spear in battle and possesses immense inhuman strength. He does not recognize equality, only subordination."
+            },
+            {
+                name: "Morr'kalil",
+                img: "Morrkalil.jpg",
+                role: {
+                    cz: "Bůh temnoty",
+                    en: "God of Darkness"
+                },
+                cz: "Morr’kalil je temný bůh krve, utrpení a smrti, přebývající v Temnotě. Je posedlý utrpením, touží přetvořit svět v nekonečný chrám bolesti. Jeho stoupenci mu slouží ve fanatické víře, že skrze bolest přijde očista. Vládne prastaré temné magii, která mu umožňuje vysávat životní sílu z živých bytostí, ovládat krev a duše, vyvolávat nemrtvé. Dokáže šířit nákazu temnoty, měnit lidi v znetvořené služebníky a otevírat trhliny mezi světem živých a říší smrti. Jeho přítomnos láme vůli a probouzí strach i šílenství v srdcích smrtelníků. ",
+                en: "Morr'kalil is a dark god of blood, suffering, and death, dwelling in the Darkness. He is obsessed with suffering, desiring to transform the world into an endless temple of pain. His followers serve him in the fanatical belief that through pain comes purification. He wields ancient dark magic that allows him to drain the life force from living beings, control blood and souls, and summon the undead. He can spread the plague of darkness, turn people into disfigured servants, and open rifts between the world of the living and the realm of death. His presence breaks the will and awakens fear and madness in the hearts of mortals."
+            },
+            {
+                name: "Aron DaVinci",
+                img: "AronDaVinci.jpg",
+                role: {
+                    cz: "Vrchní velitel Odporu - Laslan,Stonegard,Talandre",
+                    en: "Supreme Commander of the Resistance - Laslan,Stonegard,Talandre"
+                },
+                cz: "Aron DaVinci je velitel Spojeneckých sil odporu Laslanu. Pochází s Kastletonu. Povahově je klidný, vyrovnaný a autoritativní. Symbolizuje vůdce, který dokáže spojit rozdílné síly. Stojí na straně dobra a usiluje o sjednocení. ",
+                en: "Aron DaVinci is the commander of the Allied Resistance Forces of Laslan. He comes from Kastleton. He is calm, balanced and authoritative in nature. He symbolizes a leader who can unite different forces. He stands on the side of good and strives for unification."
+            },
+            {
+                name: "Jacque Hander",
+                img: "JacqueHander.jpg",
+                role: {
+                    cz: "Velitel Odporu - Stonegard",
+                    en: "Keeper of Order - Stonegard"
+                },
+                cz: "Jacque Hander je velitelem Stonegradských sil odporu. Je autoritativní a neústupný, jeho přítomnost v příběhu ukazuje vojenský řád a pevnost. Vztahy k ostatním jsou postaveny na přísné hierarchii, avšak jeho autorita není jen prázdnou maskou – je postavena na schopnosti vést. ",
+                en: "Jacque Hander is the commander of the Stonegrad Resistance. He is authoritative and unyielding, his presence in the story shows military order and strength. Relations with others are built on a strict hierarchy, but his authority is not just an empty mask - it is built on the ability to lead."
+            },
+            {
+                name: "Sienna Parsons",
+                img: "SiennaParsons.jpg",
+                role: {
+                    cz: "Hlavní mágyně",
+                    en: "High Mage"
+                },
+                cz: "Sienna Parsons je hlavní mágyní Spojeneckých sil odporu a hradu Kamenný strážce. Je klidná, vyrovnaná a moudrá, ovládá zemní magii a magii portálů. Je rádkyní, mostem mezi jednotlivými vůdci a silami, které by se jinak snadno rozhádaly.",
+                en: "Jacque Hander je velitelem Stonegradských sil odporu. Je autoritativní a neústupný, jeho přítomnost v příběhu ukazuje vojenský řád a pevnost. Vztahy k ostatním jsou postaveny na přísné hierarchii, avšak jeho autorita není jen prázdnou maskou – je postavena na schopnosti vést. "
+            }
+        ];
+
+        function lightEffect(message) {
+    return new Promise((resolve) => {
+
+        const flash = document.createElement("div");
+        flash.className = "lightFlash";
+        document.body.appendChild(flash);
+
+        const text = document.createElement("div");
+        text.innerText = message;
+
+        text.style = `
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #ffe8a3;
+            font-size: 18px;
+            text-align: center;
+            z-index: 10000;
+            font-family: Cinzel, serif;
+            letter-spacing: 1px;
+        `;
+
+        document.body.appendChild(text);
+
+        setTimeout(() => {
+            flash.remove();
+            text.remove();
+            resolve(); // 👈 TADY ŘEKNE: „efekt skončil“
+        }, 1400);
+    });
 }
-let currentChapter = 1;
-let page = 0;
-const books = {
-    1: {
-    cz: "Oheň a Voda",
-    en: "Fire and Water"
-},
-    2: {
-        cz: "Neznámá kniha",
-        en: "Unknown book"
-    },
-    3: {
-        cz: "Neznámá kniha",
-        en: "Unknown book"
-    },
-    4: {
-        cz: "Neznámá kniha",
-        en: "Unknown book"
-    },
-    5: {
-        cz: "Neznámá kniha",
-        en: "Unknown book"
-    },
-};
-const bookIcons = {
-    1: "🔥💧",
-    2: "📖"
-};
-const readyBooks = [1]; // sem budeš přidávat další hotové knihy
-const chapterNames = {
-    1: {
-        1: "Ruiny Turaynu",
-        2: "Písky Pouště měsíčního světla",
-        3: "Temný les"
-    }
-};
+        
+        function darkEffect(message) {
 
-    const characters = [
-{
-    name: "Rowena",
-    img: "Rowena.jpg",
-    role: {
-    cz: "Léčitelka",
-    en: "Healer"},
-    cz: "Rowena pochází z Kastletonu, rušného přístavního města na kontinentu Laslan, kde se od dětství pohybovala mezi lidmi nejrůznějších kultur. Už jako malá byla vybrána k výcviku ve Věži čistého světla, což z ní učinilo léčitelku s hlubokými znalostmi starých textů a rituálů. Její povaha je spíše introspektivní, tichá a pečující; často upřednostňuje druhé před sebou.",
-    en: "Rowena comes from Kastleton, a bustling port city on the continent of Laslan, where she has been surrounded by people of all cultures since childhood. She was chosen as a young girl to train at the Tower of Pure Light, which made her a healer with a deep knowledge of ancient texts and rituals. Her nature is rather introspective, quiet, and caring; she often puts others before herself."
-},
-{
-    name: "Aaliyah",
-    img: "Aaliyah.jpg",
-    role: {
-    cz: "Ohnivá mágyně",
-    en: "Fire mage"},
-    cz: "Aaliyah pochází z přístavního města Vienta na kontinentu Stonegrad, kde se lidé od dětství učí vnímat oheň jako dar, nikoli prokletí. Je mágyní ohně, která prošla výcvikem ve Svatyni Rudého dechu. Aaliyah je impulzivní, odvážná a nezávislá, často mluví rychleji, než myslí a její sarkastické poznámky zlehčují i ty nejtemnější chvíle.",
-    en: "Aaliyah comes from the port city of Vienta on the continent of Stonegrad, where people are taught from childhood to see fire as a gift, not a curse. She is a fire mage who trained at the Shrine of Red Breath. Impulsive, bold, and independent, Aaliyah often speaks faster than she thinks, and her sarcastic remarks lighten even the darkest moments."
-},
-{
-    name: "James",
-    img: "James.jpg",
-    role: {
-    cz: "Vrah",
-    en: "Assassin"},
-    cz: "James se narodil v městě Herba na kontinentu Talandre, kde život vrahů a špehů formuje chladnou disciplínu. Je nájemným vrahem a mistrem boje na blízko, vládne dýkami, kopím i stínovou magií. Jeho povaha je klidná, tichá a pozorující, nikdy nemluví zbytečně. ",
-    en: "James was born in the city of Herba on the continent of Talandre, where the life of assassins and spies shapes a cold discipline. He is a hired assassin and a master of close combat, wielding daggers, spears and shadow magic. His nature is calm, quiet and observant, never speaking unnecessarily."
-},
-{
-    name: "Hugh",
-    img: "Hugh.jpg",
-    role: {
-    cz: "Vrah",
-    en: "Assassin"},
-    cz: "Mizerik, mladší bratr Jamese, pochází z Herby a vyrůstal ve stejném prostředí jako on. Je nájemným vrahem, který ovládá boj s mečem, kopím i stínovou magii, ale na rozdíl od Jamese jedná impulzivněji a s větší krutostí. Je vášnivý, věrný, prudký v rozhodování a zároveň velmi škodolibý. ",
-    en: "Mizerik, James' younger brother, comes from Herba and grew up in the same environment as him. He is a hired assassin who masters sword, spear and shadow magic, but unlike James, he acts more impulsively and with greater cruelty. He is passionate, loyal, quick in decision-making and at the same time very malicious."
-},
-{
-    name: "Thomas",
-    img: "Thomas.jpg",
-    role: {
-    cz: "Rytíř",
-    en: "Knight"},
-    cz: "Thomas, rytíř hradu Kamenný strážce na kontinentu Stonegard, byl vychován v přísném vojenském řádu, kde čest, disciplína a síla znamenaly vše. Je zkušeným bojovníkem, který používá meč a kopí a dokáže vést muže v poli. Je čestný, hrdý, tvrdohlavý a prudký v rozhodování, zároveň však silně loajální a odhodlaný chránit nevinné, i za cenu vlastního života. ",
-    en: "Thomas, a knight of the Stoneguard Castle on the continent of Stonegard, was raised in a strict military order where honor, discipline, and strength meant everything. He is a skilled warrior who wields sword and spear and can lead men in the field. He is honest, proud, stubborn, and quick-witted, yet fiercely loyal and determined to protect the innocent, even at the cost of his own life."
-},
-{
-    name: "William",
-    img: "William.jpg",
-    role: {
-    cz: "Kapitán rytířů",
-    en: "Captain of the knights"},
-    cz: "William pochází z Herby. Byl převelen do Vienty a později hradu Kamenný strážce, kde působí jako kapitán rytířů. Právě tam se setkal s Thomasem a rychle se z nich stali nejlepší přátelé.  Povahou je okouzlující, vtipný a inteligentní, avšak za jeho šarmem se skrývá sobectví a manipulativnost.",
-    en: "William comes from Herba. He was transferred to Vienta and later to the Stoneguard Castle, where he serves as the captain of the knights. It was there that he met Thomas and they quickly became best friends. He is charming, witty and intelligent, but behind his charm lies selfishness and manipulation."
-},
-{
-    name: "Brienne",
-    img: "Brienne.jpg",
-    role: {
-    cz: "Stín",
-    en: "Shadow"},
-    cz: "Brienne je bytost stínu, která na sebe bere podobu mladé a křehké léčitelky z Věži čistého světla. Je krutá, manipulativní a pomstychtivá, vládne stínovou magií, magií proměny a psychickou kontrolou. ",
-    en: "Brienne is a being of the shadow who takes the form of a young and fragile healer from the Tower of Pure Light. She is cruel, manipulative and vengeful, she masters shadow magic, transformation magic and psychic control."
-},
-{
-    name: "Zarveth",
-    img: "Zarveth.jpg",
-    role: {
-    cz: "Stín",
-    en: "Shadow"},
-    cz: "Zarveth je bytost stínu a nejvěrnější služebník Morr’kalila. Působí jako děsivý velitel a nelítostný bojovník. Je krutý, dominantní a manipulativní, vládne stínovou magií a vede armády temnoty. V boji používá meč a kopí a disponuje obrovskou nelidskou silou. Neuznává rovnocennost, jen podřízenost.",
-    en: "Zarveth is a being of the shadow and the most loyal servant of Morr'kalil. He acts as a terrifying commander and a ruthless warrior. He is cruel, dominant and manipulative, wielding shadow magic and leading armies of darkness. He uses a sword and spear in battle and possesses immense inhuman strength. He does not recognize equality, only subordination."
-},
-{
-    name: "Morr'kalil",
-    img: "Morrkalil.jpg",
-    role: {
-    cz: "Bůh temnoty",
-    en: "God of Darkness"},
-    cz: "Morr’kalil je temný bůh krve, utrpení a smrti, přebývající v Temnotě. Je posedlý utrpením, touží přetvořit svět v nekonečný chrám bolesti. Jeho stoupenci mu slouží ve fanatické víře, že skrze bolest přijde očista. Vládne prastaré temné magii, která mu umožňuje vysávat životní sílu z živých bytostí, ovládat krev a duše, vyvolávat nemrtvé. Dokáže šířit nákazu temnoty, měnit lidi v znetvořené služebníky a otevírat trhliny mezi světem živých a říší smrti. Jeho přítomnos láme vůli a probouzí strach i šílenství v srdcích smrtelníků. ",
-    en: "Morr'kalil is a dark god of blood, suffering, and death, dwelling in the Darkness. He is obsessed with suffering, desiring to transform the world into an endless temple of pain. His followers serve him in the fanatical belief that through pain comes purification. He wields ancient dark magic that allows him to drain the life force from living beings, control blood and souls, and summon the undead. He can spread the plague of darkness, turn people into disfigured servants, and open rifts between the world of the living and the realm of death. His presence breaks the will and awakens fear and madness in the hearts of mortals."
-},
-{
-    name: "Aron DaVinci",
-    img: "AronDaVinci.jpg",
-    role: {
-    cz: "Vrchní velitel Odporu - Laslan,Stonegard,Talandre",
-    en: "Supreme Commander of the Resistance - Laslan,Stonegard,Talandre"},
-    cz: "Aron DaVinci je velitel Spojeneckých sil odporu Laslanu. Pochází s Kastletonu. Povahově je klidný, vyrovnaný a autoritativní. Symbolizuje vůdce, který dokáže spojit rozdílné síly. Stojí na straně dobra a usiluje o sjednocení. ",
-    en: "Aron DaVinci is the commander of the Allied Resistance Forces of Laslan. He comes from Kastleton. He is calm, balanced and authoritative in nature. He symbolizes a leader who can unite different forces. He stands on the side of good and strives for unification."
-},
-{
-    name: "Jacque Hander",
-    img: "JacqueHander.jpg",
-    role: {
-    cz: "Velitel Odporu - Stonegard",
-    en: "Keeper of Order - Stonegard"},
-    cz: "Jacque Hander je velitelem Stonegradských sil odporu. Je autoritativní a neústupný, jeho přítomnost v příběhu ukazuje vojenský řád a pevnost. Vztahy k ostatním jsou postaveny na přísné hierarchii, avšak jeho autorita není jen prázdnou maskou – je postavena na schopnosti vést. ",
-    en: "Jacque Hander is the commander of the Stonegrad Resistance. He is authoritative and unyielding, his presence in the story shows military order and strength. Relations with others are built on a strict hierarchy, but his authority is not just an empty mask - it is built on the ability to lead."
-},
-{
-    name: "Sienna Parsons",
-    img: "SiennaParsons.jpg",
-    role: {
-    cz: "Hlavní mágyně",
-    en: "High Mage"},
-    cz: "Sienna Parsons je hlavní mágyní Spojeneckých sil odporu a hradu Kamenný strážce. Je klidná, vyrovnaná a moudrá, ovládá zemní magii a magii portálů. Je rádkyní, mostem mezi jednotlivými vůdci a silami, které by se jinak snadno rozhádaly.",
-    en: "Jacque Hander je velitelem Stonegradských sil odporu. Je autoritativní a neústupný, jeho přítomnost v příběhu ukazuje vojenský řád a pevnost. Vztahy k ostatním jsou postaveny na přísné hierarchii, avšak jeho autorita není jen prázdnou maskou – je postavena na schopnosti vést. "
-}    
-];
+            // vytvoří overlay
+            const flash = document.createElement("div");
+            flash.className = "darkFlash";
+            document.body.appendChild(flash);
 
-// 📖 otevření knihy
-function openBook(i) {
-    updateLayout(false);
-    localStorage.setItem("lastBook", i);
-    localStorage.setItem("inBook", "true");
+            // text
+            const text = document.createElement("div");
+            text.innerText = message;
 
-    library.style.display = 'none';
-    content.classList.add('active');
+            text.style = `
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        color: #ff4d4d;
+        font-size: 18px;
+        text-align: center;
+        z-index: 10000;
+        font-family: Cinzel, serif;
+        letter-spacing: 1px;
+    `;
 
-    if (i === 1) {
-        content.innerHTML = `
+            document.body.appendChild(text);
+
+            // odstranění po animaci
+            setTimeout(() => {
+                flash.remove();
+                text.remove();
+            }, 800);
+        }
+        // 📖 otevření knihy
+        function openBook(i) {
+            updateLayout(false);
+            localStorage.setItem("lastBook", i);
+            localStorage.setItem("inBook", "true");
+
+            library.style.display = 'none';
+            content.classList.add('active');
+
+            if (i === 1) {
+                content.innerHTML = `
             <h2>Kniha 1</h2>
             <h3>${books[i]?.[currentLang] || "Unknown"}</h3>
 
@@ -537,19 +687,19 @@ function openBook(i) {
 </div>            
         `;
 
-        // 🔥 JEDINÝ LISTENER PRO VŠECHNY TLAČÍTKA
-    document.getElementById("bookMenu").onclick = (e) => {
-        const btn = e.target.closest("button");
-        if (!btn) return;
+                // 🔥 JEDINÝ LISTENER PRO VŠECHNY TLAČÍTKA
+                document.getElementById("bookMenu").onclick = (e) => {
+                    const btn = e.target.closest("button");
+                    if (!btn) return;
 
-        const section = btn.dataset.section;
-        if (section) {
-            showSection(section);
-        }
-    };
-}
-else {
-        content.innerHTML = `
+                    const section = btn.dataset.section;
+                    if (section) {
+                        showSection(section);
+                    }
+                };
+            }
+            else {
+                content.innerHTML = `
             <h2>Kniha ${i}</h2>
             <h3>${books[i]?.[currentLang] || "Unknown"}</h3>
 
@@ -559,95 +709,96 @@ else {
 
             <div class="back" onclick="goBack()">← zpět do knihovny</div>
         `;
-    }
-setTimeout(() => {
-    if (localStorage.getItem("reload")) {
+            }
+            setTimeout(() => {
+                if (localStorage.getItem("reload")) {
 
-        setTimeout(() => {
-            const section = localStorage.getItem("lastSection");
+                    setTimeout(() => {
+                        const section = localStorage.getItem("lastSection");
 
-            if (section === "story") {
-                showSection("story");
+                        if (section === "story") {
+                            showSection("story");
 
-                const savedChapter = parseInt(localStorage.getItem("lastChapter_" + currentLang)) || 1;
+                            const savedChapter = parseInt(localStorage.getItem("lastChapter_" + currentLang)) || 1;
 
+                            setTimeout(() => {
+                                openChapter(1, savedChapter, currentLang);
+                            }, 100);
+
+                        } else if (["gallery", "characters"].includes(section)) {
+                            showSection(section);
+                        } else {
+                            showSection("story");
+                        }
+
+                        localStorage.removeItem("reload");
+                    }, 150);
+                }
+            }, 50);
+
+            const lastSection = localStorage.getItem("lastSection");
+
+            if (lastSection) {
                 setTimeout(() => {
-                    openChapter(1, savedChapter, currentLang);
-                }, 100);
-
-            } else if (["gallery", "characters"].includes(section)) {
-                showSection(section);
-            } else {
-                showSection("story");
+                    showSection(lastSection);
+                }, 50);
             }
 
-            localStorage.removeItem("reload");
-        }, 150);      
-    }
-}, 50);
+        }
 
-const lastSection = localStorage.getItem("lastSection");
+        function showSection(section) {
+            console.log("SECTION:", section); // debug
 
-if (lastSection) {
-    setTimeout(() => {
-        showSection(lastSection);
-    }, 50);
-}
+            if (!section) section = "story";
 
-}
+            const container = document.getElementById("sectionContent");
+            if (!container) return;
 
-function showSection(section) {
-    console.log("SECTION:", section); // debug
+            localStorage.setItem("lastSection", section);
+            console.log("SECTION:", section);
 
-    if (!section) section = "story";
+            if (!["story", "gallery", "characters"].includes(section)) {
+                section = "story";
+            }
+            if (section === "story") {
 
-    const container = document.getElementById("sectionContent");
-    if (!container) return;
+                container.innerHTML = `
+<div style="text-align:center; margin-bottom:10px;">
+    <button onclick="toggleChapters()">📚 ${t("chapters")}</button>
+</div>
 
-    localStorage.setItem("lastSection", section);
-    console.log("SECTION:", section);
+<div id="chapterList" style="display:none; text-align:center;"></div>
 
-    if (!["story", "gallery", "characters"].includes(section)) {
-        section = "story";
-    }
-    if (section === "story") {
+<div id="chapterContent">
+    <div id="chapterTitle"></div>
+    <div id="pageText"></div>
 
-    container.innerHTML = `
-        <div style="text-align:center; margin-bottom:10px;">
-            <button onclick="toggleChapters()">📚 ${t("chapters")}</button>
-        </div>
+    <div style="margin-top:15px; text-align:center;">
+        <button onclick="prevPage()">⬅</button>
+        <span id="pageInfo"></span>
+        <button onclick="nextPage()">➡</button>
+    </div>
+</div>
 
-        <div id="chapterList" style="display:none; text-align:center;"></div>
+<div style="text-align:center; margin-top:20px; opacity:0.7; cursor:pointer;"
+    onclick="goBack()">
+    ${t("back")}
+</div>
+`;
 
-        <div id="chapterContent">
-            <div id="chapterTitle"></div>
-            <div id="pageText"></div>
+                let saved = parseInt(localStorage.getItem("lastChapter_" + currentLang)) || 1;
 
-            <div style="margin-top:15px; text-align:center;">
-                <button onclick="prevPage()">⬅</button>
-                <span id="pageInfo"></span>
-                <button onclick="nextPage()">➡</button>
-            </div>
-        </div>
-        <div style="text-align:center; margin-top:20px; opacity:0.7; cursor:pointer;"
-            onclick="goBack()">
-             ${t("back")}
-        </div>
-    `;
+                if (saved < 1) saved = 1;
+                if (saved > 50) saved = 1; // limit třeba 50
 
-   let saved = parseInt(localStorage.getItem("lastChapter_" + currentLang)) || 1;
+                openChapter(1, saved, currentLang);
+            }
 
-if (saved < 1) saved = 1;
-if (saved > 50) saved = 1; // limit třeba 50
+            // 🖼 GALERIE
+            else if (section === "gallery") {
 
-openChapter(1, saved, currentLang);
-}
-
-    // 🖼 GALERIE
-    if (section === "gallery") {
-
-    let html = `
-    <h3>${t("gallery")}</h3>>
+                let html = `
+    <h3>${t("gallery")}</h3>
 
     <div id="galleryGrid" style="
         display:grid;
@@ -656,15 +807,15 @@ openChapter(1, saved, currentLang);
     "></div>
     `;
 
-    container.innerHTML = html;
+                container.innerHTML = html;
 
-    loadGallery();
-}
+                loadGallery();
+            }
 
-    // 👤 POSTAVY
-    else if (section === "characters") {
+            // 👤 POSTAVY
+            else if (section === "characters") {
 
-        let html = `<h3>${t("characters")}</h3>
+                let html = `<h3>${t("characters")}</h3>
         <div style="
             display:grid;
             grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -672,8 +823,8 @@ openChapter(1, saved, currentLang);
             padding:10px;
         ">`;
 
-        characters.forEach((char, index) => {
-            html += `
+                characters.forEach((char, index) => {
+                    html += `
                 <div onclick="openCharacter(${index})" style="
                     border:1px solid #555;
                     padding:10px;
@@ -687,261 +838,262 @@ openChapter(1, saved, currentLang);
                     <div style="opacity:0.7;">${char.role[currentLang]}</div>
                 </div>
             `;
-        });
+                });
 
-        html += `</div>`;
-        container.style.opacity = 0;
-
-setTimeout(() => {
-    container.innerHTML = html;
-    container.style.opacity = 1;
-}, 250);
-    }
-    
-} 
-const container = document.getElementById("sectionContent");
-if (container) {
-    container.style.opacity = 1;
-}  
-// 📄 načítání kapitol
-function openChapter(book, chapter, lang, forcedPage = null) {
-    updateLayout(false);
-    currentChapter = chapter;
-
-    localStorage.setItem("lastChapter_" + lang, chapter);
-    localStorage.setItem("lastLang", lang);
-
-    if (chapter < 1) chapter = 1;
-
-    const path = `knihy/kniha${book}/${lang}/kap${String(chapter).padStart(2,'0')}.txt`;
-
-    fetch(path)
-        .then(res => {
-            if (!res.ok) throw new Error("404");
-            return res.text();
-        })
-        .then(text => {
-
-            // 🔥 název kapitoly
-            let firstLine = text.split(/\r?\n/).find(line => line.trim() !== "") || "Bez názvu";
-            window.chapterTitleText = firstLine;
-
-            // 🔥 text bez názvu
-            let cleanText = text.split(/\r?\n/).slice(1).join("\n");
-
-            // 🔥 REALNÉ STRÁNKOVÁNÍ (Kindle styl)
-
-let pages = [];
-const box = document.getElementById("measureBox");
-const contentBox = document.getElementById("pageText");
-
-if (!box || !contentBox) {
-    setTimeout(() => {
-        openChapter(book, chapter, lang, forcedPage);
-    }, 50);
-    return;
-}
-
-box.style.width = contentBox.clientWidth + "px";
-
-const maxHeight = contentBox.clientHeight || 400;
-
-box.innerText = "";
-
-// 🔥 rozdělení na věty
-let sentences = cleanText.match(/[^.!?]+[.!?]+|[^.!?]+$/g) || [];
-
-let current = "";
-
-sentences.forEach(sentence => {
-    let test = current + sentence + " ";
-
-    box.innerText = test;
-
-    if (box.scrollHeight > maxHeight) {
-        pages.push(current);
-        current = sentence + " ";
-    } else {
-        current = test;
-    }
-});
-
-// poslední stránka
-if (current.trim() !== "") {
-    pages.push(current);
-}
-
-            // 🔥 stránka
-            if (forcedPage === "last") {
-                page = pages.length - 1;
-            } else if (forcedPage !== null) {
-                page = forcedPage;
-            } else {
-                let saved = localStorage.getItem("page_" + lang + "_" + chapter);
-                page = saved !== null ? parseInt(saved) : 0;
-            }
-
-            if (page < 0) page = 0;
-            if (page >= pages.length) page = pages.length - 1;
-
-            // 🔥 render
-            window.renderPage = function () {
-
-                const chapterTitle = document.getElementById("chapterTitle");
-                if (chapterTitle) {
-                    chapterTitle.innerText = window.chapterTitleText || "Bez názvu";
-                }
-
-                const el = document.getElementById("pageText");
-                if (!el) return;
-
-                el.style.opacity = 0;
+                html += `</div>`;
+                container.style.opacity = 0;
 
                 setTimeout(() => {
-                    el.innerText = pages[page] || t("emptyPage");
-                    el.style.opacity = 1;
-                }, 100);
+                    container.innerHTML = html;
+                    container.style.opacity = 1;
+                }, 250);
+            }
 
-                const info = document.getElementById("pageInfo");
-                if (info) {
-                    info.innerText =
-                    (page + 1) + " / " + pages.length;
-                }
+        
+        
+        if (container) {
+            container.style.opacity = 1;
+        }
+        }
+        // 📄 načítání kapitol
+        function openChapter(book, chapter, lang, forcedPage = null) {
+            updateLayout(false);
+            currentChapter = chapter;
 
-                localStorage.setItem("page_" + lang + "_" + chapter, page);
-            };
+            localStorage.setItem("lastChapter_" + lang, chapter);
+            localStorage.setItem("lastLang", lang);
 
-            // 🔥 navigace
-            window.prevPage = function () {
-                if (page > 0) {
-                    page--;
-                    renderPage();
-                    return;
-                }
-                // 🔥 jsme na začátku stránky → zkus předchozí kapitolu
-                getAvailableChapters(book, lang).then(chapters => {
+            if (chapter < 1) chapter = 1;
 
-                    if (chapters.includes(chapter - 1)) {
-                        openChapter(book, chapter - 1, lang, "last");
-                    } else {
-                        console.log("📖 Začátek knihy");
-                    }             
-                });
-            };
+            const path = `knihy/kniha${book}/${lang}/kap${String(chapter).padStart(2, '0')}.txt`;
 
-            window.nextPage = function () {
-                 if (page < pages.length - 1) {
-                    page++;
-                    renderPage();
-                    return;
-                }
+            fetch(path)
+                .then(res => {
+                    if (!res.ok) throw new Error("404");
+                    return res.text();
+                })
+                .then(text => {
 
-                    getAvailableChapters(book, lang).then(chapters => {
-                        if (chapters.includes(chapter + 1)) {
-                            openChapter(book, chapter + 1, lang, 0);
+                    // 🔥 název kapitoly
+                    let firstLine = text.split(/\r?\n/).find(line => line.trim() !== "") || "Bez názvu";
+                    window.chapterTitleText = firstLine;
+
+                    // 🔥 text bez názvu
+                    let cleanText = text.split(/\r?\n/).slice(1).join("\n");
+
+                    // 🔥 REALNÉ STRÁNKOVÁNÍ (Kindle styl)
+
+                    let pages = [];
+                    const box = document.getElementById("measureBox");
+                    const contentBox = document.getElementById("pageText");
+
+                    if (!box || !contentBox) {
+                        setTimeout(() => {
+                            openChapter(book, chapter, lang, forcedPage);
+                        }, 50);
+                        return;
+                    }
+
+                    box.style.width = contentBox.clientWidth + "px";
+
+                    const maxHeight = contentBox.clientHeight || 400;
+
+                    box.innerText = "";
+
+                    // 🔥 rozdělení na věty
+                    let sentences = cleanText.match(/[^.!?]+[.!?]+|[^.!?]+$/g) || [];
+
+                    let current = "";
+
+                    sentences.forEach(sentence => {
+                        let test = current + sentence + " ";
+
+                        box.innerText = test;
+
+                        if (box.scrollHeight > maxHeight) {
+                            pages.push(current);
+                            current = sentence + " ";
                         } else {
-                            console.log("📖 Konec knihy");
+                            current = test;
                         }
                     });
-                };
 
-                renderPage();
-                generateChapters();
-            
-        })
-        .catch((err) => {
-    console.error("ERROR DETAIL:", err);
+                    // poslední stránka
+                    if (current.trim() !== "") {
+                        pages.push(current);
+                    }
 
-    // 🔥 fallback na kapitolu 1
-    if (chapter !== 1) {
-        openChapter(book, 1, lang);
-        return;
-    }
+                    // 🔥 stránka
+                    if (forcedPage === "last") {
+                        page = pages.length - 1;
+                    } else if (forcedPage !== null) {
+                        page = forcedPage;
+                    } else {
+                        let saved = localStorage.getItem("page_" + lang + "_" + chapter);
+                        page = saved !== null ? parseInt(saved) : 0;
+                    }
 
-    const el = document.getElementById("pageText");
-    if (el) el.innerText = "❌ Chyba načítání";
-});
-}
-function goToChapter(chapter) {
-    openChapter(1, chapter, currentLang);
-}
-async function getAvailableChapters(book, lang, max = 50) {
-    let available = [];
+                    if (page < 0) page = 0;
+                    if (page >= pages.length) page = pages.length - 1;
 
-    for (let i = 1; i <= max; i++) {
-        const path = `knihy/kniha${book}/${lang}/kap${String(i).padStart(2,'0')}.txt`;
+                    // 🔥 render
+                    window.renderPage = function () {
 
-        try {
-            const res = await fetch(path, { method: "HEAD" });
-            if (res.ok) {
-                available.push(i);
-            } else {
-                break; // jakmile nenajde → konec
+                        const chapterTitle = document.getElementById("chapterTitle");
+                        if (chapterTitle) {
+                            chapterTitle.innerText = window.chapterTitleText || "Bez názvu";
+                        }
+
+                        const el = document.getElementById("pageText");
+                        if (!el) return;
+
+                        el.style.opacity = 0;
+
+                        setTimeout(() => {
+                            el.innerText = pages[page] || t("emptyPage");
+                            el.style.opacity = 1;
+                        }, 100);
+
+                        const info = document.getElementById("pageInfo");
+                        if (info) {
+                            info.innerText =
+                                (page + 1) + " / " + pages.length;
+                        }
+
+                        localStorage.setItem("page_" + lang + "_" + chapter, page);
+                    };
+
+                    // 🔥 navigace
+                    window.prevPage = function () {
+                        if (page > 0) {
+                            page--;
+                            renderPage();
+                            return;
+                        }
+                        // 🔥 jsme na začátku stránky → zkus předchozí kapitolu
+                        getAvailableChapters(book, lang).then(chapters => {
+
+                            if (chapters.includes(chapter - 1)) {
+                                openChapter(book, chapter - 1, lang, "last");
+                            } else {
+                                console.log("📖 Začátek knihy");
+                            }
+                        });
+                    };
+
+                    window.nextPage = function () {
+                        if (page < pages.length - 1) {
+                            page++;
+                            renderPage();
+                            return;
+                        }
+
+                        getAvailableChapters(book, lang).then(chapters => {
+                            if (chapters.includes(chapter + 1)) {
+                                openChapter(book, chapter + 1, lang, 0);
+                            } else {
+                                console.log("📖 Konec knihy");
+                            }
+                        });
+                    };
+
+                    renderPage();
+                    generateChapters();
+
+                })
+                .catch((err) => {
+                    console.error("ERROR DETAIL:", err);
+
+                    // 🔥 fallback na kapitolu 1
+                    if (chapter !== 1) {
+                        openChapter(book, 1, lang);
+                        return;
+                    }
+
+                    const el = document.getElementById("pageText");
+                    if (el) el.innerText = "❌ Chyba načítání";
+                });
+        }
+        function goToChapter(chapter) {
+            openChapter(1, chapter, currentLang);
+        }
+        async function getAvailableChapters(book, lang, max = 50) {
+            let available = [];
+
+            for (let i = 1; i <= max; i++) {
+                const path = `knihy/kniha${book}/${lang}/kap${String(i).padStart(2, '0')}.txt`;
+
+                try {
+                    const res = await fetch(path, { method: "HEAD" });
+                    if (res.ok) {
+                        available.push(i);
+                    } else {
+                        break; // jakmile nenajde → konec
+                    }
+                } catch {
+                    break;
+                }
             }
-        } catch {
-            break;
+
+            return available;
         }
-    }
+        async function generateChapters() {
+            const list = document.getElementById("chapterList");
 
-    return available;
-}
-async function generateChapters() {
-    const list = document.getElementById("chapterList");
+            const chapters = await getAvailableChapters(1, currentLang);
 
-    const chapters = await getAvailableChapters(1, currentLang);
+            let html = "";
 
-    let html = "";
+            chapters.forEach(i => {
+                let style = "margin:3px;";
 
-    chapters.forEach(i => {
-        let style = "margin:3px;";
+                if (i === currentChapter) {
+                    style += " background:#888; color:#000;";
+                }
 
-        if (i === currentChapter) {
-            style += " background:#888; color:#000;";
+                html += `<button style="${style}" onclick="goToChapter(${i})">${i}</button>`;
+            });
+
+            list.innerHTML = html;
         }
+        async function toggleChapters() {
+            const list = document.getElementById("chapterList");
 
-        html += `<button style="${style}" onclick="goToChapter(${i})">${i}</button>`;
-    });
-
-    list.innerHTML = html;
-}
-async function toggleChapters() {
-    const list = document.getElementById("chapterList");
-
-    if (list.style.display === "none") {
-        list.style.display = "block";
-        await generateChapters();
-    } else {
-        list.style.display = "none";
-    }
-}
-async function loadGallery() {
-    const grid = document.getElementById("galleryGrid");
-
-    let index = 1;
-    let images = [];
-
-    while (true) {
-        let name = `scenes${String(index).padStart(2,'0')}.jpg`;
-        let path = `knihy/kniha1/scenes/${name}`;
-
-        try {
-            let res = await fetch(path, { method: "HEAD" });
-
-            if (!res.ok) break;
-
-            images.push(path);
-            index++;
-        } catch {
-            break;
+            if (list.style.display === "none") {
+                list.style.display = "block";
+                await generateChapters();
+            } else {
+                list.style.display = "none";
+            }
         }
-    }
+        async function loadGallery() {
+            const grid = document.getElementById("galleryGrid");
 
-    window.galleryImages = images;
+            let index = 1;
+            let images = [];
 
-    let html = "";
+            while (true) {
+                let name = `scenes${String(index).padStart(2, '0')}.jpg`;
+                let path = `knihy/kniha1/scenes/${name}`;
 
-    images.forEach((img, i) => {
-        html += `
+                try {
+                    let res = await fetch(path, { method: "HEAD" });
+
+                    if (!res.ok) break;
+
+                    images.push(path);
+                    index++;
+                } catch {
+                    break;
+                }
+            }
+
+            window.galleryImages = images;
+
+            let html = "";
+
+            images.forEach((img, i) => {
+                html += `
             <img src="${img}" onclick="openImage(${i})" style="
                 width:100%;
                 cursor:pointer;
@@ -951,18 +1103,18 @@ async function loadGallery() {
             onmouseover="this.style.transform='scale(1.05)'"
             onmouseout="this.style.transform='scale(1)'">
         `;
-    });
+            });
 
-    grid.innerHTML = html;
-}
-function openImage(index) {
+            grid.innerHTML = html;
+        }
+        function openImage(index) {
 
-    window.currentImage = index;
+            window.currentImage = index;
 
-    let viewer = document.createElement("div");
-    viewer.id = "imgViewer";
+            let viewer = document.createElement("div");
+            viewer.id = "imgViewer";
 
-    viewer.style = `
+            viewer.style = `
         position:fixed;
         top:0;
         left:0;
@@ -975,7 +1127,7 @@ function openImage(index) {
         z-index:9999;
     `;
 
-    viewer.innerHTML = `
+            viewer.innerHTML = `
         <button onclick="prevImg()" style="position:absolute; left:20px;">⬅</button>
 
         <img id="fullImg" src="${galleryImages[index]}" style="
@@ -992,32 +1144,33 @@ function openImage(index) {
         ">✖</button>
     `;
 
-    document.body.appendChild(viewer);
-}
-function nextImg() {
-    currentImage++;
-    if (currentImage >= galleryImages.length) currentImage = 0;
+            document.body.appendChild(viewer);
+        }
+        function nextImg() {
+            currentImage++;
+            if (currentImage >= galleryImages.length) currentImage = 0;
 
-    document.getElementById("fullImg").src = galleryImages[currentImage];
-}
+            document.getElementById("fullImg").src = galleryImages[currentImage];
+        }
 
-function prevImg() {
-    currentImage--;
-    if (currentImage < 0) currentImage = galleryImages.length - 1;
+        function prevImg() {
+            currentImage--;
+            if (currentImage < 0) currentImage = galleryImages.length - 1;
 
-    document.getElementById("fullImg").src = galleryImages[currentImage];
-}
+            document.getElementById("fullImg").src = galleryImages[currentImage];
+        }
 
-function closeImg() {
-    document.getElementById("imgViewer").remove();
-}
-function openCharacter(index) {
+        function closeImg() {
+            document.getElementById("imgViewer").remove();
+        }
+        function openCharacter(index) {
 
-    const char = characters[index];
+            const char = characters[index];
+            const container = document.getElementById("sectionContent");
 
-    const container = document.getElementById("sectionContent");
+            
 
-    container.innerHTML = `
+            container.innerHTML = `
     <div style="
         max-width:800px; 
         margin:auto; 
@@ -1050,92 +1203,133 @@ function openCharacter(index) {
         </div>
         
     `;
-};
-// 🔙 zpět
-function goBack() {
-    updateLayout(true);
-    localStorage.setItem("inBook", "false");
+        };
+        
+        // 🔙 zpět
+        function goBack() {
+            updateLayout(true);
+            localStorage.setItem("inBook", "false");
+            content.classList.remove('active');
+            library.style.display = 'flex';
+            return;
+        }
+        window.onload = function () {
+
+            document.getElementById("visits").innerText =
+                "👁 " + count + " " + t(count === 1 ? "visitOne" : "visitMany");
+
+            updateLayout(true);
+            currentLang = localStorage.getItem("lang") || "cz";
+            const lastLang = localStorage.getItem("lastLang");
+            const lastSection = localStorage.getItem("lastSection");
+            const inBook = localStorage.getItem("inBook");
+            const lastBook = localStorage.getItem("lastBook") || 1;
+
+            updateLangUI();
+            renderMenu();
+            renderLibrary();
+            localStorage.setItem("reload", "true");
+
+            if (inBook === "true") {
+                const book = parseInt(localStorage.getItem("lastBook")) || 1;
+                const section = localStorage.getItem("lastSection") || "story";
+
+                openBook(book);
+            }
+        };
+        document.addEventListener("keydown", function (e) {
+
+            console.log("KEY:", e.key);
+
+            // 🖼 pokud je otevřený obrázek → ovládá galerii
+            if (document.getElementById("imgViewer")) {
+
+                if (e.key === "ArrowRight") nextImg();
+                if (e.key === "ArrowLeft") prevImg();
+                if (e.key === "Escape") closeImg();
+
+                return; // ❗ zastaví další logiku
+            }
+
+            // 📖 jinak ovládá knihu
+            if (e.key === "ArrowRight") {
+                if (window.nextPage) {
+                    window.nextPage();
+                }
+            }
+
+            if (e.key === "ArrowLeft") {
+                if (window.prevPage) {
+                    window.prevPage();
+                }
+            }
+        });
+        let resizeTimeout;
+
+        window.addEventListener("resize", () => {
+            clearTimeout(resizeTimeout);
+
+            resizeTimeout = setTimeout(() => {
+                openChapter(1, currentChapter, currentLang, page);
+            }, 300);
+        });
+        async function showMainSection(section) {
+            updateLayout(true);
+
+            localStorage.setItem("mainSection", section);
+            localStorage.setItem("inBook", "false");
+
+            library.style.display = 'none';
+            content.classList.add('active');
+
+            const LIBRARY_PASSWORDS = {
+                cz: "NavzdySpolu",
+                en: "ForeverTogether"
+            };
+
+            if (section === "library") {
+
+    if (DEV_MODE) {
+        localStorage.removeItem("libraryUnlocked");
+    }
+
+    const message = currentLang === "cz"
+        ? "🔒 Pouze ti, kdo znají tajemství knihovny, mohou vstoupit...\n\nZadej heslo:"
+        : "🔒 Only those who know the secret of the library may enter...\n\nEnter the password:";
+
+    const pass = prompt(message);
+
+    if (pass === LIBRARY_PASSWORDS.cz || pass === LIBRARY_PASSWORDS.en) {
+
+    localStorage.setItem("libraryUnlocked", "true");
+
+    const successMsg = currentLang === "cz"
+        ? "📖 Brána se otevírá...\nVítej, poutníku."
+        : "📖 The gate opens...\nWelcome, traveler.";
+
+    await lightEffect(successMsg);
+
+    // ✅ zobraz knihovnu jen při správném hesle
     content.classList.remove('active');
     library.style.display = 'flex';
-}
-window.onload = function() {
 
-    document.getElementById("visits").innerText =
-        "👁 " + count + " " + t(count === 1 ? "visitOne" : "visitMany");
+} else {
 
-    updateLayout(true);
-    currentLang = localStorage.getItem("lang") || "cz";
-    const lastLang = localStorage.getItem("lastLang");
-    const lastSection = localStorage.getItem("lastSection");
-    const inBook = localStorage.getItem("inBook");
-    const lastBook = localStorage.getItem("lastBook") || 1;
+    const errorMsg = currentLang === "cz"
+        ? "❌ Temnota tě odmítla.\nTajemství knihovny ti zůstává skryto."
+        : "❌ The darkness rejects you.\nThe library remains hidden from you.";
 
-    updateLangUI();
-    renderMenu();
-    renderLibrary();
-    localStorage.setItem("reload", "true");
+    await darkEffect(errorMsg);
 
-    if (inBook === "true") {
-    const book = parseInt(localStorage.getItem("lastBook")) || 1;
-    const section = localStorage.getItem("lastSection") || "story";
-
-    openBook(book);
-}
-};
-document.addEventListener("keydown", function(e) {
-
-    console.log("KEY:", e.key);
-
-    // 🖼 pokud je otevřený obrázek → ovládá galerii
-    if (document.getElementById("imgViewer")) {
-
-        if (e.key === "ArrowRight") nextImg();
-        if (e.key === "ArrowLeft") prevImg();
-        if (e.key === "Escape") closeImg();
-
-        return; // ❗ zastaví další logiku
-    }
-
-    // 📖 jinak ovládá knihu
-    if (e.key === "ArrowRight") {
-        if (window.nextPage) {
-            window.nextPage();
-        }
-    }
-
-    if (e.key === "ArrowLeft") {
-        if (window.prevPage) {
-            window.prevPage();
-        }
-    }
-});
-let resizeTimeout;
-
-window.addEventListener("resize", () => {
-    clearTimeout(resizeTimeout);
-
-    resizeTimeout = setTimeout(() => {
-        openChapter(1, currentChapter, currentLang, page);
-    }, 300);
-});
-function showMainSection(section) {
-    updateLayout(true);
-
-    localStorage.setItem("mainSection", section);
-
-     localStorage.setItem("inBook", "false");
-
+    // ❌ SCHOVAT VŠECHNO
+    content.classList.remove('active');
     library.style.display = 'none';
-    content.classList.add('active');
 
-    if (section === "library") {
-        content.classList.remove('active');
-        library.style.display = 'flex';
-        return;
-    }
-
-    if (section === "about") {
-    content.innerHTML = `
+    return;
+}
+}
+if (section === "about") {
+                content.innerHTML = `
         <div style="
             max-width:900px;
             margin:auto;
@@ -1143,8 +1337,8 @@ function showMainSection(section) {
 
             <h2>
                 ${currentLang === "cz"
-                    ? "Něco málo o mně"
-                    : "About me"}
+                        ? "Něco málo o mně"
+                        : "About me"}
             </h2>
 
             <div style="
@@ -1184,11 +1378,11 @@ function showMainSection(section) {
 ">
                     <p>
                         ${currentLang === "cz"
-                            ? `Píšu, protože jinak bych nedokázala říct všechno, co cítím.
+                        ? `Píšu, protože jinak bych nedokázala říct všechno, co cítím.
                         V příbězích nacházím svět, kde mají emoce prostor, kde myšlenky dávají smysl a kde i obyčejné chvíle můžou být výjimečné.
                         Nepíšu proto, že musím. Píšu proto, že chci.
                         A pokud se v mých slovech někdo najde, pak má psaní smysl.`
-                            : `I write because otherwise I wouldn’t be able to express everything I feel.
+                        : `I write because otherwise I wouldn’t be able to express everything I feel.
                         In stories I find a world where emotions have space and thoughts make sense.
                         I don’t write because I have to. I write because I want to.
                         And if someone finds themselves in my words, then it has meaning.`}
@@ -1196,18 +1390,18 @@ function showMainSection(section) {
 
                     <p>
                         ${currentLang === "cz"
-                            ? "Tento web je darem od mého manžela – podporou, která mi dává prostor i chuť psát dál."
-                            : "This website is a gift from my husband — a support that gives me both space and the desire to keep writing."}
+                        ? "Tento web je darem od mého manžela – podporou, která mi dává prostor i chuť psát dál."
+                        : "This website is a gift from my husband — a support that gives me both space and the desire to keep writing."}
                     </p>
                 </div>
 
             </div>
         </div>
     `;
-}
+            }
 
-    if (section === "contact") {
-    content.innerHTML = `
+            else if (section === "contact") {
+                content.innerHTML = `
     <div style="max-width:800px; margin:auto;">
 
         <h2 style="text-align:center;">📖 ${t("guestbook")}</h2>
@@ -1257,93 +1451,93 @@ function showMainSection(section) {
 
     </div>
 `;
-    loadMessages();
-}
-}
-function sanitize(text) {
-    return text.replace(/</g, "&lt;").replace(/>/g, "&gt;");
-}
-async function addMessage(e) {
-    e.preventDefault();
+                loadMessages();
+            }
+}            
+            function sanitize(text) {
+                return text.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+            }
+            async function addMessage(e) {
+                e.preventDefault();
 
-    const name = document.getElementById("msgName").value.trim();
-    const text = document.getElementById("msgText").value.trim();
+                const name = document.getElementById("msgName").value.trim();
+                const text = document.getElementById("msgText").value.trim();
 
-    // ✅ VALIDACE NEJDŘÍV
+                // ✅ VALIDACE NEJDŘÍV
 
-    if (name.length < 2) {
-        alert("Jméno je moc krátké");
-        return;
-    }
+                if (name.length < 2) {
+                    alert("Jméno je moc krátké");
+                    return;
+                }
 
-    if (name.length > 30) {
-        alert("Jméno je moc dlouhé");   
-        return; 
-    }
+                if (name.length > 30) {
+                    alert("Jméno je moc dlouhé");
+                    return;
+                }
 
-    if (text.trim() === "") {
-        alert("Zpráva je prázdná");
-        return;
-    }
+                if (text.trim() === "") {
+                    alert("Zpráva je prázdná");
+                    return;
+                }
 
-    if (text.length < 5) {
-        alert("Zpráva je moc krátká");
-        return;
-    }
+                if (text.length < 5) {
+                    alert("Zpráva je moc krátká");
+                    return;
+                }
 
-    if (text.length > 500) {
-        alert("Zpráva je moc dlouhá");
-        return;
-    }
+                if (text.length > 500) {
+                    alert("Zpráva je moc dlouhá");
+                    return;
+                }
 
-    if (text.toLowerCase().includes("http") || text.toLowerCase().includes("www")) {
-        alert("Odkazy nejsou povoleny");
-        return;
-    }
+                if (text.toLowerCase().includes("http") || text.toLowerCase().includes("www")) {
+                    alert("Odkazy nejsou povoleny");
+                    return;
+                }
 
-    // ⏱️ ANTI-SPAM
-    const lastMsg = localStorage.getItem("lastMessageTime");
-    const now = Date.now();
+                // ⏱️ ANTI-SPAM
+                const lastMsg = localStorage.getItem("lastMessageTime");
+                const now = Date.now();
 
-    if (lastMsg && now - lastMsg < 10000) {
-        alert("Počkej chvíli před dalším vzkazem");
-        return;
-    }
+                if (lastMsg && now - lastMsg < 10000) {
+                    alert("Počkej chvíli před dalším vzkazem");
+                    return;
+                }
 
-    localStorage.setItem("lastMessageTime", now);
+                localStorage.setItem("lastMessageTime", now);
 
-    // ✅ TEPRVE TEĎ ULOŽIT
-    await addDoc(collection(db, "messages"), {
-        name: sanitize(name),
-        text: sanitize(text),
-        time: new Date(),
-        reply: ""
-    });
+                // ✅ TEPRVE TEĎ ULOŽIT
+                await addDoc(collection(db, "messages"), {
+                    name: sanitize(name),
+                    text: sanitize(text),
+                    time: new Date(),
+                    reply: ""
+                });
 
-    e.target.reset();
-    loadMessages();
-}
+                e.target.reset();
+                loadMessages();
+            }
 
-async function loadMessages() {
-    const container = document.getElementById("messages");
-    if (!container) return;
+            async function loadMessages() {
+                const container = document.getElementById("messages");
+                if (!container) return;
 
-    const q = query(collection(db, "messages"), orderBy("time", "desc"));
-    const querySnapshot = await getDocs(q);
+                const q = query(collection(db, "messages"), orderBy("time", "desc"));
+                const querySnapshot = await getDocs(q);
 
-    let html = "";
+                let html = "";
 
-    if (querySnapshot.empty) {
-        container.innerHTML = `<p style="text-align:center; opacity:0.6;">
+                if (querySnapshot.empty) {
+                    container.innerHTML = `<p style="text-align:center; opacity:0.6;">
             ${t("emptyMessages")}
         </p>`;
-        return;
-    }
+                    return;
+                }
 
-    querySnapshot.forEach((docSnap) => {   // ✅ opraveno
-        const msg = docSnap.data();
+                querySnapshot.forEach((docSnap) => {   // ✅ opraveno
+                    const msg = docSnap.data();
 
-        html += `
+                    html += `
             <div style="border:1px solid #444; padding:20px; margin-bottom:20px;">
                 <div>✍ ${msg.name}</div>
                 <div style="font-size:11px; opacity:0.5;">
@@ -1351,13 +1545,12 @@ async function loadMessages() {
                 </div>
                 <p>${msg.text}</p>
 
-                ${
-                    msg.reply && msg.reply !== ""
-                    ? `<div style="margin-top:10px; padding:10px; border-top:1px solid #555; color:#8affc1;">
+                ${msg.reply && msg.reply !== ""
+                            ? `<div style="margin-top:10px; padding:10px; border-top:1px solid #555; color:#8affc1;">
                             💬 Odpověď: ${msg.reply}
                        </div>`
-                    : ""
-                }
+                            : ""
+                        }
 
                 <button onclick="replyMessage('${docSnap.id}')">
                     💬 Odpovědět
@@ -1368,118 +1561,118 @@ async function loadMessages() {
                 </button>
             </div>
         `;
-    });
+                });
 
-    container.innerHTML = html;
-}
-async function replyMessage(id) {
-    const pass = prompt("🔒 Admin heslo:");
+                container.innerHTML = html;
+            }
+            async function replyMessage(id) {
+                const pass = prompt("🔒 Admin heslo:");
 
-    if (pass !== ADMIN_PASSWORD) {
-        alert("❌ Špatné heslo");
-        return;
-    }
+                if (pass !== ADMIN_PASSWORD) {
+                    alert("❌ Špatné heslo");
+                    return;
+                }
 
-    const reply = prompt("💬 Napiš odpověď:");
+                const reply = prompt("💬 Napiš odpověď:");
 
-    if (!reply) return;
+                if (!reply) return;
 
-    await updateDoc(doc(db, "messages", id), {
-        reply: sanitize(reply)
-    });
+                await updateDoc(doc(db, "messages", id), {
+                    reply: sanitize(reply)
+                });
 
-    loadMessages();
-}
-async function deleteMessage(id) {
-    const pass = prompt("🔒 Zadej heslo pro smazání:");
+                loadMessages();
+            }
+            async function deleteMessage(id) {
+                const pass = prompt("🔒 Zadej heslo pro smazání:");
 
-    if (pass !== ADMIN_PASSWORD) {
-        alert("❌ Špatné heslo");
-        return;
-    }
+                if (pass !== ADMIN_PASSWORD) {
+                    alert("❌ Špatné heslo");
+                    return;
+                }
 
-    try {
-        await deleteDoc(doc(db, "messages", id));
-        console.log("✅ Smazáno:", id);
-    } catch (e) {
-        console.error("❌ CHYBA MAZÁNÍ:", e);
-    }
+                try {
+                    await deleteDoc(doc(db, "messages", id));
+                    console.log("✅ Smazáno:", id);
+                } catch (e) {
+                    console.error("❌ CHYBA MAZÁNÍ:", e);
+                }
 
-    loadMessages();
-}
-async function replyMessage(id) {
-    const pass = prompt("🔒 Admin heslo:");
+                loadMessages();
+            }
+            async function replyMessage(id) {
+                const pass = prompt("🔒 Admin heslo:");
 
-    if (pass !== ADMIN_PASSWORD) {
-        alert("❌ Špatné heslo");
-        return;
-    }
+                if (pass !== ADMIN_PASSWORD) {
+                    alert("❌ Špatné heslo");
+                    return;
+                }
 
-    const reply = prompt("💬 Napiš odpověď:");
+                const reply = prompt("💬 Napiš odpověď:");
 
-    if (!reply) return;
+                if (!reply) return;
 
-    await updateDoc(doc(db, "messages", id), {
-        reply: sanitize(reply)
-    });
+                await updateDoc(doc(db, "messages", id), {
+                    reply: sanitize(reply)
+                });
 
-    loadMessages();
-}
-function setLang(lang) {
-    currentLang = lang;
-    localStorage.setItem("lang", lang);
+                loadMessages();
+            }
+            function setLang(lang) {
+                currentLang = lang;
+                localStorage.setItem("lang", lang);
 
-    updateLangUI();
-    renderMenu(); 
-    renderLibrary();
-    updateVisits();
+                updateLangUI();
+                renderMenu();
+                renderLibrary();
+                updateVisits();
 
-    const inBook = localStorage.getItem("inBook");
-    const mainSection = localStorage.getItem("mainSection") || "library";
+                const inBook = localStorage.getItem("inBook");
+                const mainSection = localStorage.getItem("mainSection") || "library";
 
-    if (inBook === "true" && mainSection !== "library") {
+                if (inBook === "true" && mainSection !== "library") {
 
-        const book = parseInt(localStorage.getItem("lastBook")) || 1;
-        const section = localStorage.getItem("lastSection") || "story";
+                    const book = parseInt(localStorage.getItem("lastBook")) || 1;
+                    const section = localStorage.getItem("lastSection") || "story";
 
-        openBook(book);
+                    openBook(book);
 
-        setTimeout(() => {
-            showSection(section);
-        }, 100);
+                    setTimeout(() => {
+                        showSection(section);
+                    }, 100);
 
-    } else {
-        showMainSection(mainSection);
-    }
-}
-function rerenderUI() {
+                } else {
+                    showMainSection(mainSection);
+                }
+            }
+            function rerenderUI() {
 
-    // hlavní tlačítka
-    document.querySelector("button[onclick*='about']").innerText = "👤 " + t("about");
-    document.querySelector("button[onclick*='contact']").innerText = "✉ " + t("contact");
-    document.querySelector("button[onclick*='library']").innerText = "📚 " + t("library");
+                // hlavní tlačítka
+                document.querySelector("button[onclick*='about']").innerText = "👤 " + t("about");
+                document.querySelector("button[onclick*='contact']").innerText = "✉ " + t("contact");
+                document.querySelector("button[onclick*='library']").innerText = "📚 " + t("library");
 
-    // pokud jsi v knize → reload
-    if (localStorage.getItem("inBook") === "true") {
-        openBook(localStorage.getItem("lastBook") || 1);
-    }
-}
-function renderMenu() {
-    document.getElementById("title").innerText = t("title");
-    document.querySelector("button[onclick*='about']").innerText = "👤 " + t("about");
-    document.querySelector("button[onclick*='contact']").innerText = "✉ " + t("contact");
-    document.querySelector("button[onclick*='library']").innerText = "📚 " + t("library");
-    
-}
-function renderLibrary() {
+                // pokud jsi v knize → reload
+                if (localStorage.getItem("inBook") === "true") {
+                    openBook(localStorage.getItem("lastBook") || 1);
+                }
+            }
+            function renderMenu() {
+                document.getElementById("title").innerText = t("title");
+                document.querySelector("button[onclick*='about']").innerText = "👤 " + t("about");
+                document.querySelector("button[onclick*='contact']").innerText = "✉ " + t("contact");
+                document.querySelector("button[onclick*='library']").innerText = "📚 " + t("library");
 
-    library.innerHTML = ""; // 🔥 vyčistí staré knihy
+            }
+            function renderLibrary() {
 
-    for (let i = 1; i <= 5; i++) {
-        const book = document.createElement('div');
-        book.className = 'book';
+                library.innerHTML = ""; // 🔥 vyčistí staré knihy
 
-        book.innerHTML = `
+                for (let i = 1; i <= 5; i++) {
+                    const book = document.createElement('div');
+                    book.className = 'book';
+
+                    book.innerHTML = `
         <div class="wrap">
             <div class="top">${i}</div>
 
@@ -1493,38 +1686,37 @@ function renderLibrary() {
         </div>
         `;
 
-        book.onclick = () => openBook(i);
-        library.appendChild(book);
-    }
-}
-function updateLangUI() {
-    document.querySelectorAll('.langSwitch span').forEach(el => {
-        el.classList.remove("active");
+                    book.onclick = () => openBook(i);
+                    library.appendChild(book);
+                }
+            }
+            function updateLangUI() {
+                document.querySelectorAll('.langSwitch span').forEach(el => {
+                    el.classList.remove("active");
 
-        if (el.innerText.includes(currentLang === "cz" ? "🇨🇿" : "🇬🇧"))
-        {
-            el.classList.add("active");
-        }
-    });
-}
-function updateLayout(isHome) {
-    const visits = document.getElementById("visits");
-    const footer = document.getElementById("footer");
+                    if (el.innerText.includes(currentLang === "cz" ? "🇨🇿" : "🇬🇧")) {
+                        el.classList.add("active");
+                    }
+                });
+            }
+            function updateLayout(isHome) {
+                const visits = document.getElementById("visits");
+                const footer = document.getElementById("footer");
 
-    if (isHome) {
-        visits.style.display = "block";
-        footer.style.display = "block";
-    } else {
-        visits.style.display = "none";
-        footer.style.display = "none";
-    }
-}
-function updateVisits() {
-    document.getElementById("visits").innerText =
-        "👁 " + count + " " + t(count === 1 ? "visitOne" : "visitMany");
-}
-</script>
-<div id="measureBox" style="
+                if (isHome) {
+                    visits.style.display = "block";
+                    footer.style.display = "block";
+                } else {
+                    visits.style.display = "none";
+                    footer.style.display = "none";
+                }
+            }
+            function updateVisits() {
+                document.getElementById("visits").innerText =
+                    "👁 " + count + " " + t(count === 1 ? "visitOne" : "visitMany");
+            }
+    </script>
+    <div id="measureBox" style="
     position:absolute;
     visibility:hidden;
     padding:20px;
@@ -1534,4 +1726,5 @@ function updateVisits() {
 "></div>
 
 </body>
+
 </html>
