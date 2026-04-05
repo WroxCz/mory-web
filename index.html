@@ -623,10 +623,10 @@ function showSection(section) {
         </div>
     `;
 
-    let saved = parseInt(localStorage.getItem("lastChapter_" + currentLang)) || 1;
+   let saved = parseInt(localStorage.getItem("lastChapter_" + currentLang)) || 1;
 
-// 🔥 pojistka – max kapitola (zatím máš 2)
-if (saved > 3) saved = 1;
+if (saved < 1) saved = 1;
+if (saved > 50) saved = 1; // limit třeba 50
 
 openChapter(1, saved, currentLang);
 }
@@ -1209,7 +1209,7 @@ function showMainSection(section) {
                 background:rgba(0,0,0,0.5);
                 padding:20px;
                 border:1px solid #444;
-                box-shadow:0 0 20px rgba(0,255,150,0.1);
+                box-shadow:0 0 10px rgba(255,255,255,0.2);
             ">
                 <input id="msgName" placeholder="${t("formName")}" required>
                 <textarea id="msgText" placeholder="${t("formMessage")}" required></textarea>
@@ -1218,7 +1218,16 @@ function showMainSection(section) {
 
             <!-- 📜 VZKAZY -->
             <div id="messages"></div>
-
+            
+            <div style="text-align:center; margin-bottom:20px; opacity:0.8;">
+            <p>
+                Vítejte, poutníci.<br>
+                Nechť vás tyto stránky provedou příběhem.<br>
+                Máte-li přání či připomínky, zanechte svůj vzkaz v této temné kronice.
+            </p>
+            <div style="margin-top:10px; font-size:13px; opacity:0.6;">
+                — Wrox, Strážce knihovny
+            </div>
         </div>
     `;
     loadMessages();
@@ -1230,9 +1239,53 @@ function sanitize(text) {
 async function addMessage(e) {
     e.preventDefault();
 
-    const name = document.getElementById("msgName").value;
-    const text = document.getElementById("msgText").value;
+    const name = document.getElementById("msgName").value.trim();
+    const text = document.getElementById("msgText").value.trim();
 
+    // ✅ VALIDACE NEJDŘÍV
+
+    if (name.length < 2) {
+        alert("Jméno je moc krátké");
+        return;
+    }
+
+    if (name.length > 30) {
+        alert("Jméno je moc dlouhé");   
+        return; 
+    }
+
+    if (text.trim() === "") {
+        alert("Zpráva je prázdná");
+        return;
+    }
+
+    if (text.length < 5) {
+        alert("Zpráva je moc krátká");
+        return;
+    }
+
+    if (text.length > 500) {
+        alert("Zpráva je moc dlouhá");
+        return;
+    }
+
+    if (text.toLowerCase().includes("http") || text.toLowerCase().includes("www")) {
+        alert("Odkazy nejsou povoleny");
+        return;
+    }
+
+    // ⏱️ ANTI-SPAM
+    const lastMsg = localStorage.getItem("lastMessageTime");
+    const now = Date.now();
+
+    if (lastMsg && now - lastMsg < 10000) {
+        alert("Počkej chvíli před dalším vzkazem");
+        return;
+    }
+
+    localStorage.setItem("lastMessageTime", now);
+
+    // ✅ TEPRVE TEĎ ULOŽIT
     await addDoc(collection(db, "messages"), {
         name: sanitize(name),
         text: sanitize(text),
@@ -1243,6 +1296,7 @@ async function addMessage(e) {
     e.target.reset();
     loadMessages();
 }
+
 async function loadMessages() {
     const container = document.getElementById("messages");
     if (!container) return;
