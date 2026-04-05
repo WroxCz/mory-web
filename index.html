@@ -324,6 +324,12 @@ const UI = {
     title: "Knihovna příběhů",
     visitOne: "návštěva",
     visitMany: "návštěv",
+    intro: `
+        Vítejte, poutníci.<br>
+        Nechť vás tyto stránky provedou příběhem.<br>
+        Máte-li přání či připomínky,<br>
+        zanechte svůj vzkaz v této temné kronice.`,
+    signature: "— Wrox, Strážce knihovny",
     
 },
     en: {
@@ -347,6 +353,12 @@ const UI = {
         title: "Library of Stories",
         visitOne: "visit",
         visitMany: "visits",
+        intro: `
+            Welcome, travelers.<br>
+            May these pages guide you through the story.<br>
+            If you have any wishes or feedback,<br>
+            leave your message in this dark chronicle.`,
+        signature: "— Wrox, Keeper of the Library",
     }
 };
 function t(key) {
@@ -1201,18 +1213,28 @@ function showMainSection(section) {
         <h2 style="text-align:center;">📖 ${t("guestbook")}</h2>
 
         <!-- ✨ ÚVOD -->
-        <div style="text-align:center; margin:20px 0; opacity:0.85;">
-            <p style="line-height:1.6;">
-                Vítejte, poutníci.<br>
-                Nechť vás tyto stránky provedou příběhem.<br>
-                Máte-li přání či připomínky, zanechte svůj vzkaz v této temné kronice.
-            </p>
-            <div style="margin-top:10px; font-size:13px; opacity:0.6;">
-                — Wrox, Strážce knihovny
-            </div>
+        <p style="
+    line-height:1.8;
+    font-size:16px;
+    font-family: Georgia, serif;
+    color:#ddd;
+    text-align:center;
+">
+    ${t("intro")}
+</p>
+
+<div style="
+    margin-top:12px;
+    font-size:13px;
+    opacity:0.6;
+    letter-spacing:1px;
+    text-align:center;
+">
+    ${t("signature")}
+</div>
         </div>
 
-        <hr style="opacity:0.2; margin:20px 0;">
+        <hr style="opacity:0.2; margin:25px 0;">
 
         <!-- ✍️ FORM -->
         <form onsubmit="addMessage(event)" style="
