@@ -9,6 +9,32 @@
     <link href="https://fonts.googleapis.com/css2?family=Cinzel&display=swap" rel="stylesheet">
 
     <style>
+        .guard {
+    position: fixed;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 320px;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.75;
+
+    display: none; /* ← důležité */
+}
+body.contact-active .guard {
+    display: block;
+}
+
+/* LEVÝ – od středu */
+.guard.left {
+    left: 50%;
+    transform: translate(-300px, -50%);
+}
+
+/* PRAVÝ – od středu */
+.guard.right {
+    left: 50%;
+    transform: translate(0px, -50%);
+}
         body {
             margin: 0;
             background: radial-gradient(circle at center, #111 0%, #000 100%);
@@ -18,6 +44,7 @@
             flex-direction: column;
             align-items: center;
         }
+        
 
         /* kouř */
         .smoke {
@@ -326,6 +353,9 @@
 
 <body>
 
+    <img src="./webimages/W-strazceL.jpg" class="guard left">
+    <img src="./webimages/W-strazceP.jpg" class="guard right">
+
     <div class="smoke"></div>
     <div class="counter" id="visits">👁 načítám...</div>
     <div class="langSwitch">
@@ -334,7 +364,7 @@
     </div>
     <h1 id="title"></h1>
     <div style="margin-bottom:20px;">
-        <button onclick="showMainSection('about')">👤</button>
+        <button onclick="showMainSection('mw')">M + W</button>
         <button onclick="showMainSection('contact')">✉</button>
         <button onclick="showMainSection('library')">📚</button>
     </div>
@@ -1304,7 +1334,11 @@
             }, 300);
         });
         async function showMainSection(section) {
+            document.body.classList.remove("contact-active");
+            document.body.style.background = "radial-gradient(circle at center, #111 0%, #000 100%)";
+            content.style.background = "";
             updateLayout(true);
+            content.style.background = "";
 
             localStorage.setItem("mainSection", section);
             localStorage.setItem("inBook", "false");
@@ -1456,81 +1490,165 @@ library.style.display = 'none';
         return;
     }
 }
-if (section === "about") {
+if (section === "mw") {
                 content.innerHTML = `
         <div style="
             max-width:900px;
             margin:auto;
         ">
-
-            <h2>
-                ${currentLang === "cz"
-                        ? "Něco málo o mně"
-                        : "About me"}
-            </h2>
-
             <div style="
-                display:flex;
-                gap:30px;
-                align-items:center;
-                flex-wrap:wrap;
-                margin-top:20px;
-            ">
-
-                <!-- 📸 obrázek -->
-                <img src="./webimages/MoryanaVau.png" 
-                    style="
-                        width:260px;
-                        height:260px;
-                        object-fit: cover;
-                        object-position: 60% center;
-
-                        border-radius: 50%;
-                        border: 2px solid rgba(255,255,255,0.15);
-
-                        box-shadow: 
-                            0 0 25px rgba(255,180,100,0.25),
-                            0 0 60px rgba(150,200,255,0.15);
-
-                        animation: glowPulse 6s ease-in-out infinite;    
-                        transition: 0.4s;
-                    "
-                    onmouseover="this.style.transform='scale(1.05)'"
-                    onmouseout="this.style.transform='scale(1)'"
-                >
-
-                <!-- 📝 text -->
-                <div class="textBlock" style="
-    flex:1;
-    min-width:250px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:30px;
+    margin-top:20px;
 ">
-                    <p>
-                        ${currentLang === "cz"
-                        ? `Píšu, protože jinak bych nedokázala říct všechno, co cítím.
-                        V příbězích nacházím svět, kde mají emoce prostor, kde myšlenky dávají smysl a kde i obyčejné chvíle můžou být výjimečné.
-                        Nepíšu proto, že musím. Píšu proto, že chci.
-                        A pokud se v mých slovech někdo najde, pak má psaní smysl.`
-                        : `I write because otherwise I wouldn’t be able to express everything I feel.
-                        In stories I find a world where emotions have space and thoughts make sense.
-                        I don’t write because I have to. I write because I want to.
-                        And if someone finds themselves in my words, then it has meaning.`}
-                    </p>
 
-                    <p>
-                        ${currentLang === "cz"
-                        ? "Tento web je darem od mého manžela – podporou, která mi dává prostor i chuť psát dál."
-                        : "This website is a gift from my husband — a support that gives me both space and the desire to keep writing."}
-                    </p>
-                </div>
+    <!-- 🔥 DVOJICE -->
+    <div style="
+        display:flex;
+        justify-content:center;
+        align-items:center;
+        gap:40px;
+        flex-wrap:wrap;
+    ">
 
-            </div>
+        <!-- MORYANA -->
+        <div style="text-align:center;">
+            <h3>Moryana</h3>
+
+            <img src="./webimages/MoryanaVau.png" 
+                style="
+                    width:240px;
+                    height:240px;
+                    object-fit:cover;
+                    border-radius:50%;
+                    border:2px solid rgba(255,255,255,0.15);
+                    box-shadow:0 0 30px rgba(255,180,100,0.35);
+                ">
         </div>
+
+        <!-- ❤️ -->
+        <div style="
+            font-size:28px;
+            opacity:0.7;
+            animation: fadeIn 2s ease;
+        ">
+            +
+        </div>
+
+        <!-- WROX -->
+        <div style="text-align:center;">
+            <h3>Wrox</h3>
+
+            <img src="./webimages/Wrox.png" 
+                style="
+                    width:240px;
+                    height:240px;
+                    object-fit:cover;
+                    border-radius:50%;
+                    border:2px solid rgba(255,255,255,0.15);
+                    box-shadow:0 0 30px rgba(150,200,255,0.35);
+                ">
+        </div>
+
+    </div>
+
+    <!-- 📝 SPOLEČNÝ TEXT -->
+<div class="textBlock" style="
+    max-width:700px;
+    text-align:justify;
+">
+
+    <p>
+        ${currentLang === "cz"
+            ? `Ne všechno, co vzniká, se dá vysvětlit.
+            Existují věci, které nepotřebují definici, aby měly hodnotu.
+            Prostě jsou — tiché, přirozené, opravdové.
+            A právě v tom je jejich síla.
+            Ne v tom, že je dokážeme popsat, ale v tom, že je dokážeme cítit.`
+            : `Not everything that comes into existence can be explained.
+            Some things do not need a definition to have meaning.
+            They simply are — quiet, natural, real.
+            And that is where their strength lies.
+            Not in being described, but in being felt.`}
+    </p>
+
+    <p>
+        ${currentLang === "cz"
+            ? `Moryana tvoří světy.
+            Ne jen slovy, ale emocemi, které mezi řádky dýchají.
+            Každý příběh je prostor, kde se rodí postavy, vztahy i okamžiky,
+            které by bez ní nikdy neexistovaly.
+            Její tvorba není jen vyprávění —
+            je to způsob, jak dát neviditelnému tvar.`
+            : `Moryana creates worlds.
+            Not only with words, but with emotions that breathe between the lines.
+            Every story becomes a space where characters, connections, and moments are born,
+            moments that would never exist without her.
+            Her work is not just storytelling —
+            it is a way of giving form to the unseen.`}
+    </p>
+
+    <p>
+        ${currentLang === "cz"
+            ? `Wrox tvoří prostor.
+            Tichý, pevný základ, na kterém tyto světy mohou stát.
+            Místo, kde příběhy dostávají podobu, strukturu a život mimo představivost.
+            Není vždy vidět — ale je vždy přítomný.
+            A bez něj by tyto světy neměly kde existovat.`
+            : `Wrox creates the space.
+            A quiet, steady foundation on which these worlds can stand.
+            A place where stories gain structure, form, and life beyond imagination.
+            Not always visible — but always present.
+            And without it, these worlds would have nowhere to exist.`}
+    </p>
+
+    <p>
+        ${currentLang === "cz"
+            ? `Tento web není jen stránka.
+            Není to jen kód, design nebo text.
+            Je to spojení dvou lidí, dvou přístupů, dvou sil,
+            které se navzájem doplňují a posouvají dál.`
+            : `This website is not just a page.
+            It is not just code, design, or text.
+            It is a connection between two people, two approaches, two forces,
+            that complement and elevate each other.`}
+    </p>
+
+    <p style="margin-top:15px;">
+        ${currentLang === "cz"
+            ? `Vznikl z podpory, důvěry a sdílené cesty.
+            Z hodin ticha i nadšení.
+            Z momentů, kdy jeden tvořil — a druhý držel prostor.
+
+            A z něčeho, co se nedá naprogramovat…
+            ani napsat.`
+            : `It was created from support, trust, and a shared journey.
+            From hours of silence and moments of excitement.
+            From times when one created — and the other held the space.
+
+            And from something that cannot be programmed…
+            or written.`}
+    </p>
+
+    <div style="margin-top:20px; text-align:center; opacity:0.7;">
+        — M + W
+    </div>
+
+</div>
     `;
             }
 
             else if (section === "contact") {
-                content.innerHTML = `
-    <div style="max-width:800px; margin:auto;">
+                document.body.classList.add("contact-active");
+
+    
+
+    content.style.backgroundAttachment = "fixed";
+
+    content.innerHTML = `
+        <div style="max-width:800px; margin:auto;">
 
         <h2 style="text-align:center;">📖 ${t("guestbook")}</h2>
 
