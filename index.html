@@ -10,31 +10,34 @@
 
     <style>
         .guard {
-    position: fixed;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 320px;
-    pointer-events: none;
-    z-index: 0;
-    opacity: 0.75;
+            position: fixed;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 320px;
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0.75;
 
-    display: none; /* ← důležité */
-}
-body.contact-active .guard {
-    display: block;
-}
+            display: none;
+            /* ← důležité */
+        }
 
-/* LEVÝ – od středu */
-.guard.left {
-    left: 50%;
-    transform: translate(-300px, -50%);
-}
+        body.contact-active .guard {
+            display: block;
+        }
 
-/* PRAVÝ – od středu */
-.guard.right {
-    left: 50%;
-    transform: translate(0px, -50%);
-}
+        /* LEVÝ – od středu */
+        .guard.left {
+            left: 50%;
+            transform: translate(-300px, -50%);
+        }
+
+        /* PRAVÝ – od středu */
+        .guard.right {
+            left: 50%;
+            transform: translate(0px, -50%);
+        }
+
         body {
             margin: 0;
             background: radial-gradient(circle at center, #111 0%, #000 100%);
@@ -44,7 +47,7 @@ body.contact-active .guard {
             flex-direction: column;
             align-items: center;
         }
-        
+
 
         /* kouř */
         .smoke {
@@ -295,24 +298,27 @@ body.contact-active .guard {
             100% {
                 opacity: 0;
             }
-            
+
         }
-@keyframes bookPulse {
-    0% {
-        box-shadow: 0 0 20px rgba(255, 200, 100, 0.25),
-                    0 0 40px rgba(255, 150, 50, 0.2);
-    }
 
-    40%, 60% {
-        box-shadow: 0 0 65px rgba(255, 200, 100, 0.75),
+        @keyframes bookPulse {
+            0% {
+                box-shadow: 0 0 20px rgba(255, 200, 100, 0.25),
+                    0 0 40px rgba(255, 150, 50, 0.2);
+            }
+
+            40%,
+            60% {
+                box-shadow: 0 0 65px rgba(255, 200, 100, 0.75),
                     0 0 130px rgba(255, 150, 50, 0.55);
-    }
+            }
 
-    100% {
-        box-shadow: 0 0 20px rgba(255, 200, 100, 0.25),
+            100% {
+                box-shadow: 0 0 20px rgba(255, 200, 100, 0.25),
                     0 0 40px rgba(255, 150, 50, 0.2);
-    }
-}
+            }
+        }
+
         .lightFlash {
             position: fixed;
             top: 0;
@@ -338,15 +344,21 @@ body.contact-active .guard {
                 opacity: 0;
             }
         }
-        .fade-in {
-    opacity: 0;
-    animation: fadeIn 2s ease forwards;
-}
 
-@keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-}
+        .fade-in {
+            opacity: 0;
+            animation: fadeIn 2s ease forwards;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
     </style>
 
 </head>
@@ -398,7 +410,7 @@ body.contact-active .guard {
         window.addDoc = addDoc;
         window.deleteDoc = deleteDoc;
         window.doc = doc;
-        
+
         window.updateDoc = updateDoc;
         window.query = query;
         window.orderBy = orderBy;
@@ -653,16 +665,16 @@ body.contact-active .guard {
         ];
 
         function lightEffect(message) {
-    return new Promise((resolve) => {
+            return new Promise((resolve) => {
 
-        const flash = document.createElement("div");
-        flash.className = "lightFlash";
-        document.body.appendChild(flash);
+                const flash = document.createElement("div");
+                flash.className = "lightFlash";
+                document.body.appendChild(flash);
 
-        const text = document.createElement("div");
-        text.innerText = message;
+                const text = document.createElement("div");
+                text.innerText = message;
 
-        text.style = `
+                text.style = `
             position: fixed;
             top: 50%;
             left: 50%;
@@ -675,16 +687,16 @@ body.contact-active .guard {
             letter-spacing: 1px;
         `;
 
-        document.body.appendChild(text);
+                document.body.appendChild(text);
 
-        setTimeout(() => {
-            flash.remove();
-            text.remove();
-            resolve(); // 👈 TADY ŘEKNE: „efekt skončil“
-        }, 1400);
-    });
-}
-        
+                setTimeout(() => {
+                    flash.remove();
+                    text.remove();
+                    resolve(); // 👈 TADY ŘEKNE: „efekt skončil“
+                }, 1400);
+            });
+        }
+
         function darkEffect(message) {
 
             // vytvoří overlay
@@ -904,11 +916,11 @@ body.contact-active .guard {
                 }, 250);
             }
 
-        
-        
-        if (container) {
-            container.style.opacity = 1;
-        }
+
+
+            if (container) {
+                container.style.opacity = 1;
+            }
         }
         // 📄 načítání kapitol
         function openChapter(book, chapter, lang, forcedPage = null) {
@@ -1223,7 +1235,7 @@ body.contact-active .guard {
             const char = characters[index];
             const container = document.getElementById("sectionContent");
 
-            
+
 
             container.innerHTML = `
     <div style="
@@ -1259,7 +1271,7 @@ body.contact-active .guard {
         
     `;
         };
-        
+
         // 🔙 zpět
         function goBack() {
             updateLayout(true);
@@ -1269,33 +1281,23 @@ body.contact-active .guard {
             return;
         }
         window.onload = function () {
+            console.log("ONLOAD OK");
 
             document.getElementById("visits").innerText =
                 "👁 " + count + " " + t(count === 1 ? "visitOne" : "visitMany");
 
             updateLayout(true);
             currentLang = localStorage.getItem("lang") || "cz";
-            const lastLang = localStorage.getItem("lastLang");
-            const lastSection = localStorage.getItem("lastSection");
-            const inBook = localStorage.getItem("inBook");
-            const lastBook = localStorage.getItem("lastBook") || 1;
 
             updateLangUI();
             renderMenu();
 
-            // ✅ knihovna se připraví (ale nezobrazí)
+            // knihovna se jen připraví
             renderLibrary();
 
-            // 👇 zobraz welcome
-            content.innerHTML = `
-                <div style="text-align:center;">
-                    <img src="webimages/welcome.jpg" 
-                        style="max-width:90%;">
-                </div>
-            `;
-
-            content.classList.add('active');
-            library.style.display = 'none';            
+            // 🔥 START STRÁNKY
+            const mainSection = localStorage.getItem("mainSection") || "mw";
+            showMainSection(mainSection);
         };
         document.addEventListener("keydown", function (e) {
 
@@ -1334,6 +1336,7 @@ body.contact-active .guard {
             }, 300);
         });
         async function showMainSection(section) {
+            console.log("SHOW SECTION:", section);
             document.body.classList.remove("contact-active");
             document.body.style.background = "radial-gradient(circle at center, #111 0%, #000 100%)";
             content.style.background = "";
@@ -1353,15 +1356,15 @@ body.contact-active .guard {
 
             if (section === "library") {
 
-    if (DEV_MODE) {
-        localStorage.removeItem("libraryUnlocked");
-    }
+                if (DEV_MODE) {
+                    localStorage.removeItem("libraryUnlocked");
+                }
 
-    // ✅ pokud už je odemčeno → rovnou knihovna (BEZ HESLA)
-    if (localStorage.getItem("libraryUnlocked") === "true") {
+                // ✅ pokud už je odemčeno → rovnou knihovna (BEZ HESLA)
+                if (localStorage.getItem("libraryUnlocked") === "true") {
 
-    // 👇 zobraz welcome místo rovnou knihovny
-    content.innerHTML = `
+                    // 👇 zobraz welcome místo rovnou knihovny
+                    content.innerHTML = `
         <div style="text-align:center; position:relative;">
 
             <div style="position:relative; display:inline-block;">
@@ -1385,43 +1388,43 @@ body.contact-active .guard {
         </div>
     `;
 
-    content.classList.add('active');
-    library.style.display = 'none';
+                    content.classList.add('active');
+                    library.style.display = 'none';
 
-    document.getElementById("bookHotspot").onclick = () => {
+                    document.getElementById("bookHotspot").onclick = () => {
 
-        const flash = document.createElement("div");
-        flash.className = "lightFlash";
-        document.body.appendChild(flash);
+                        const flash = document.createElement("div");
+                        flash.className = "lightFlash";
+                        document.body.appendChild(flash);
 
-        setTimeout(() => {
-            flash.remove();
+                        setTimeout(() => {
+                            flash.remove();
 
-            content.classList.remove('active');
-            library.style.display = 'flex';
-        }, 600);
-    };
+                            content.classList.remove('active');
+                            library.style.display = 'flex';
+                        }, 600);
+                    };
 
-    return;
-}
+                    return;
+                }
 
-    const message = currentLang === "cz"
-        ? "🔒 Pouze ti, kdo znají tajemství knihovny, mohou vstoupit...\n\nZadej heslo:"
-        : "🔒 Only those who know the secret of the library may enter...\n\nEnter the password:";
+                const message = currentLang === "cz"
+                    ? "🔒 Pouze ti, kdo znají tajemství knihovny, mohou vstoupit...\n\nZadej heslo:"
+                    : "🔒 Only those who know the secret of the library may enter...\n\nEnter the password:";
 
-    const pass = prompt(message);
+                const pass = prompt(message);
 
-    if (pass === LIBRARY_PASSWORDS.cz || pass === LIBRARY_PASSWORDS.en) {
+                if (pass === LIBRARY_PASSWORDS.cz || pass === LIBRARY_PASSWORDS.en) {
 
-        localStorage.setItem("libraryUnlocked", "true");
+                    localStorage.setItem("libraryUnlocked", "true");
 
-        const successMsg = currentLang === "cz"
-            ? "📖 Brána se otevírá...\nVítej, poutníku."
-            : "📖 The gate opens...\nWelcome, traveler.";
-await lightEffect(successMsg);
+                    const successMsg = currentLang === "cz"
+                        ? "📖 Brána se otevírá...\nVítej, poutníku."
+                        : "📖 The gate opens...\nWelcome, traveler.";
+                    await lightEffect(successMsg);
 
-// 👇 místo okamžité knihovny zobraz welcome obrázek
-content.innerHTML = `
+                    // 👇 místo okamžité knihovny zobraz welcome obrázek
+                    content.innerHTML = `
     <div style="text-align:center; position:relative;">
 
         <div style="position:relative; display:inline-block;">
@@ -1449,34 +1452,34 @@ onmouseout="this.style.boxShadow=''">
     </div>
 `;
 
-content.classList.add('active');
-library.style.display = 'none';
+                    content.classList.add('active');
+                    library.style.display = 'none';
 
-// 👇 kliknutí → otevře knihovnu
-document.getElementById("bookHotspot").onclick = () => {
+                    // 👇 kliknutí → otevře knihovnu
+                    document.getElementById("bookHotspot").onclick = () => {
 
-    const flash = document.createElement("div");
-    flash.className = "lightFlash";
-    document.body.appendChild(flash);
+                        const flash = document.createElement("div");
+                        flash.className = "lightFlash";
+                        document.body.appendChild(flash);
 
-    setTimeout(() => {
-        flash.remove();
+                        setTimeout(() => {
+                            flash.remove();
 
-        content.classList.remove('active');
-        library.style.display = 'flex';
-    }, 600);
-};
-        
-    } else {
+                            content.classList.remove('active');
+                            library.style.display = 'flex';
+                        }, 600);
+                    };
 
-        const errorMsg = currentLang === "cz"
-            ? "❌ Temnota tě odmítla.\nTajemství knihovny ti zůstává skryto."
-            : "❌ The darkness rejects you.\nThe library remains hidden from you.";
+                } else {
 
-        await darkEffect(errorMsg);
+                    const errorMsg = currentLang === "cz"
+                        ? "❌ Temnota tě odmítla.\nTajemství knihovny ti zůstává skryto."
+                        : "❌ The darkness rejects you.\nThe library remains hidden from you.";
 
-// 👇 přidáme obrázek POD efekt
-content.innerHTML = `
+                    await darkEffect(errorMsg);
+
+                    // 👇 přidáme obrázek POD efekt
+                    content.innerHTML = `
     <div style="text-align:center;">
         <img src="webimages/darkfucking.jpg" 
      class="fade-in"
@@ -1484,13 +1487,13 @@ content.innerHTML = `
     </div>
 `;
 
-content.classList.add('active');
-library.style.display = 'none';
+                    content.classList.add('active');
+                    library.style.display = 'none';
 
-        return;
-    }
-}
-if (section === "mw") {
+                    return;
+                }
+            }
+            if (section === "mw") {
                 content.innerHTML = `
         <div style="
             max-width:900px;
@@ -1562,12 +1565,12 @@ if (section === "mw") {
 
     <p>
         ${currentLang === "cz"
-            ? `Ne všechno, co vzniká, se dá vysvětlit.
+                        ? `Ne všechno, co vzniká, se dá vysvětlit.
             Existují věci, které nepotřebují definici, aby měly hodnotu.
             Prostě jsou — tiché, přirozené, opravdové.
             A právě v tom je jejich síla.
             Ne v tom, že je dokážeme popsat, ale v tom, že je dokážeme cítit.`
-            : `Not everything that comes into existence can be explained.
+                        : `Not everything that comes into existence can be explained.
             Some things do not need a definition to have meaning.
             They simply are — quiet, natural, real.
             And that is where their strength lies.
@@ -1576,13 +1579,13 @@ if (section === "mw") {
 
     <p>
         ${currentLang === "cz"
-            ? `Moryana tvoří světy.
+                        ? `Moryana tvoří světy.
             Ne jen slovy, ale emocemi, které mezi řádky dýchají.
             Každý příběh je prostor, kde se rodí postavy, vztahy i okamžiky,
             které by bez ní nikdy neexistovaly.
             Její tvorba není jen vyprávění —
             je to způsob, jak dát neviditelnému tvar.`
-            : `Moryana creates worlds.
+                        : `Moryana creates worlds.
             Not only with words, but with emotions that breathe between the lines.
             Every story becomes a space where characters, connections, and moments are born,
             moments that would never exist without her.
@@ -1592,12 +1595,12 @@ if (section === "mw") {
 
     <p>
         ${currentLang === "cz"
-            ? `Wrox tvoří prostor.
+                        ? `Wrox tvoří prostor.
             Tichý, pevný základ, na kterém tyto světy mohou stát.
             Místo, kde příběhy dostávají podobu, strukturu a život mimo představivost.
             Není vždy vidět — ale je vždy přítomný.
             A bez něj by tyto světy neměly kde existovat.`
-            : `Wrox creates the space.
+                        : `Wrox creates the space.
             A quiet, steady foundation on which these worlds can stand.
             A place where stories gain structure, form, and life beyond imagination.
             Not always visible — but always present.
@@ -1606,11 +1609,11 @@ if (section === "mw") {
 
     <p>
         ${currentLang === "cz"
-            ? `Tento web není jen stránka.
+                        ? `Tento web není jen stránka.
             Není to jen kód, design nebo text.
             Je to spojení dvou lidí, dvou přístupů, dvou sil,
             které se navzájem doplňují a posouvají dál.`
-            : `This website is not just a page.
+                        : `This website is not just a page.
             It is not just code, design, or text.
             It is a connection between two people, two approaches, two forces,
             that complement and elevate each other.`}
@@ -1618,13 +1621,13 @@ if (section === "mw") {
 
     <p style="margin-top:15px;">
         ${currentLang === "cz"
-            ? `Vznikl z podpory, důvěry a sdílené cesty.
+                        ? `Vznikl z podpory, důvěry a sdílené cesty.
             Z hodin ticha i nadšení.
             Z momentů, kdy jeden tvořil — a druhý držel prostor.
 
             A z něčeho, co se nedá naprogramovat…
             ani napsat.`
-            : `It was created from support, trust, and a shared journey.
+                        : `It was created from support, trust, and a shared journey.
             From hours of silence and moments of excitement.
             From times when one created — and the other held the space.
 
@@ -1643,11 +1646,11 @@ if (section === "mw") {
             else if (section === "contact") {
                 document.body.classList.add("contact-active");
 
-    
 
-    content.style.backgroundAttachment = "fixed";
 
-    content.innerHTML = `
+                content.style.backgroundAttachment = "fixed";
+
+                content.innerHTML = `
         <div style="max-width:800px; margin:auto;">
 
         <h2 style="text-align:center;">📖 ${t("guestbook")}</h2>
@@ -1699,91 +1702,91 @@ if (section === "mw") {
 `;
                 loadMessages();
             }
-}            
-            function sanitize(text) {
-                return text.replace(/</g, "&lt;").replace(/>/g, "&gt;");
-            }
-            async function addMessage(e) {
-                e.preventDefault();
+        }
+        function sanitize(text) {
+            return text.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        }
+        async function addMessage(e) {
+            e.preventDefault();
 
-                const name = document.getElementById("msgName").value.trim();
-                const text = document.getElementById("msgText").value.trim();
+            const name = document.getElementById("msgName").value.trim();
+            const text = document.getElementById("msgText").value.trim();
 
-                // ✅ VALIDACE NEJDŘÍV
+            // ✅ VALIDACE NEJDŘÍV
 
-                if (name.length < 2) {
-                    alert("Jméno je moc krátké");
-                    return;
-                }
-
-                if (name.length > 30) {
-                    alert("Jméno je moc dlouhé");
-                    return;
-                }
-
-                if (text.trim() === "") {
-                    alert("Zpráva je prázdná");
-                    return;
-                }
-
-                if (text.length < 5) {
-                    alert("Zpráva je moc krátká");
-                    return;
-                }
-
-                if (text.length > 500) {
-                    alert("Zpráva je moc dlouhá");
-                    return;
-                }
-
-                if (text.toLowerCase().includes("http") || text.toLowerCase().includes("www")) {
-                    alert("Odkazy nejsou povoleny");
-                    return;
-                }
-
-                // ⏱️ ANTI-SPAM
-                const lastMsg = localStorage.getItem("lastMessageTime");
-                const now = Date.now();
-
-                if (lastMsg && now - lastMsg < 10000) {
-                    alert("Počkej chvíli před dalším vzkazem");
-                    return;
-                }
-
-                localStorage.setItem("lastMessageTime", now);
-
-                // ✅ TEPRVE TEĎ ULOŽIT
-                await addDoc(collection(db, "messages"), {
-                    name: sanitize(name),
-                    text: sanitize(text),
-                    time: new Date(),
-                    reply: ""
-                });
-
-                e.target.reset();
-                loadMessages();
+            if (name.length < 2) {
+                alert("Jméno je moc krátké");
+                return;
             }
 
-            async function loadMessages() {
-                const container = document.getElementById("messages");
-                if (!container) return;
+            if (name.length > 30) {
+                alert("Jméno je moc dlouhé");
+                return;
+            }
 
-                const q = query(collection(db, "messages"), orderBy("time", "desc"));
-                const querySnapshot = await getDocs(q);
+            if (text.trim() === "") {
+                alert("Zpráva je prázdná");
+                return;
+            }
 
-                let html = "";
+            if (text.length < 5) {
+                alert("Zpráva je moc krátká");
+                return;
+            }
 
-                if (querySnapshot.empty) {
-                    container.innerHTML = `<p style="text-align:center; opacity:0.6;">
+            if (text.length > 500) {
+                alert("Zpráva je moc dlouhá");
+                return;
+            }
+
+            if (text.toLowerCase().includes("http") || text.toLowerCase().includes("www")) {
+                alert("Odkazy nejsou povoleny");
+                return;
+            }
+
+            // ⏱️ ANTI-SPAM
+            const lastMsg = localStorage.getItem("lastMessageTime");
+            const now = Date.now();
+
+            if (lastMsg && now - lastMsg < 10000) {
+                alert("Počkej chvíli před dalším vzkazem");
+                return;
+            }
+
+            localStorage.setItem("lastMessageTime", now);
+
+            // ✅ TEPRVE TEĎ ULOŽIT
+            await addDoc(collection(db, "messages"), {
+                name: sanitize(name),
+                text: sanitize(text),
+                time: new Date(),
+                reply: ""
+            });
+
+            e.target.reset();
+            loadMessages();
+        }
+
+        async function loadMessages() {
+            const container = document.getElementById("messages");
+            if (!container) return;
+
+            const q = query(collection(db, "messages"), orderBy("time", "desc"));
+            const querySnapshot = await getDocs(q);
+
+            let html = "";
+
+            if (querySnapshot.empty) {
+                container.innerHTML = `<p style="text-align:center; opacity:0.6;">
             ${t("emptyMessages")}
         </p>`;
-                    return;
-                }
+                return;
+            }
 
-                querySnapshot.forEach((docSnap) => {   // ✅ opraveno
-                    const msg = docSnap.data();
+            querySnapshot.forEach((docSnap) => {   // ✅ opraveno
+                const msg = docSnap.data();
 
-                    html += `
+                html += `
             <div style="border:1px solid #444; padding:20px; margin-bottom:20px;">
                 <div>✍ ${msg.name}</div>
                 <div style="font-size:11px; opacity:0.5;">
@@ -1792,11 +1795,11 @@ if (section === "mw") {
                 <p>${msg.text}</p>
 
                 ${msg.reply && msg.reply !== ""
-                            ? `<div style="margin-top:10px; padding:10px; border-top:1px solid #555; color:#8affc1;">
+                        ? `<div style="margin-top:10px; padding:10px; border-top:1px solid #555; color:#8affc1;">
                             💬 Odpověď: ${msg.reply}
                        </div>`
-                            : ""
-                        }
+                        : ""
+                    }
 
                 <button onclick="replyMessage('${docSnap.id}')">
                     💬 Odpovědět
@@ -1807,118 +1810,122 @@ if (section === "mw") {
                 </button>
             </div>
         `;
-                });
+            });
 
-                container.innerHTML = html;
+            container.innerHTML = html;
+        }
+        async function replyMessage(id) {
+            const pass = prompt("🔒 Admin heslo:");
+
+            if (pass !== ADMIN_PASSWORD) {
+                alert("❌ Špatné heslo");
+                return;
             }
-            async function replyMessage(id) {
-                const pass = prompt("🔒 Admin heslo:");
 
-                if (pass !== ADMIN_PASSWORD) {
-                    alert("❌ Špatné heslo");
-                    return;
-                }
+            const reply = prompt("💬 Napiš odpověď:");
 
-                const reply = prompt("💬 Napiš odpověď:");
+            if (!reply) return;
 
-                if (!reply) return;
+            await updateDoc(doc(db, "messages", id), {
+                reply: sanitize(reply)
+            });
 
-                await updateDoc(doc(db, "messages", id), {
-                    reply: sanitize(reply)
-                });
+            loadMessages();
+        }
+        async function deleteMessage(id) {
+            const pass = prompt("🔒 Zadej heslo pro smazání:");
 
-                loadMessages();
+            if (pass !== ADMIN_PASSWORD) {
+                alert("❌ Špatné heslo");
+                return;
             }
-            async function deleteMessage(id) {
-                const pass = prompt("🔒 Zadej heslo pro smazání:");
 
-                if (pass !== ADMIN_PASSWORD) {
-                    alert("❌ Špatné heslo");
-                    return;
-                }
-
-                try {
-                    await deleteDoc(doc(db, "messages", id));
-                    console.log("✅ Smazáno:", id);
-                } catch (e) {
-                    console.error("❌ CHYBA MAZÁNÍ:", e);
-                }
-
-                loadMessages();
+            try {
+                await deleteDoc(doc(db, "messages", id));
+                console.log("✅ Smazáno:", id);
+            } catch (e) {
+                console.error("❌ CHYBA MAZÁNÍ:", e);
             }
-            async function replyMessage(id) {
-                const pass = prompt("🔒 Admin heslo:");
 
-                if (pass !== ADMIN_PASSWORD) {
-                    alert("❌ Špatné heslo");
-                    return;
-                }
+            loadMessages();
+        }
+        async function replyMessage(id) {
+            const pass = prompt("🔒 Admin heslo:");
 
-                const reply = prompt("💬 Napiš odpověď:");
-
-                if (!reply) return;
-
-                await updateDoc(doc(db, "messages", id), {
-                    reply: sanitize(reply)
-                });
-
-                loadMessages();
+            if (pass !== ADMIN_PASSWORD) {
+                alert("❌ Špatné heslo");
+                return;
             }
-            function setLang(lang) {
-                currentLang = lang;
-                localStorage.setItem("lang", lang);
 
-                updateLangUI();
-                renderMenu();
-                renderLibrary();
-                updateVisits();
+            const reply = prompt("💬 Napiš odpověď:");
 
-                const inBook = localStorage.getItem("inBook");
-                const mainSection = localStorage.getItem("mainSection") || "library";
+            if (!reply) return;
 
-                if (inBook === "true" && mainSection !== "library") {
+            await updateDoc(doc(db, "messages", id), {
+                reply: sanitize(reply)
+            });
 
-                    const book = parseInt(localStorage.getItem("lastBook")) || 1;
-                    const section = localStorage.getItem("lastSection") || "story";
+            loadMessages();
+        }
+        function setLang(lang) {
+            currentLang = lang;
+            localStorage.setItem("lang", lang);
 
-                    openBook(book);
+            updateLangUI();
+            renderMenu();
+            renderLibrary();
+            updateVisits();
 
-                    setTimeout(() => {
-                        showSection(section);
-                    }, 100);
+            const inBook = localStorage.getItem("inBook");
+            const mainSection = localStorage.getItem("mainSection") || "mw";
 
-                } else {
-                    showMainSection(mainSection);
-                }
+            if (inBook === "true" && mainSection !== "library") {
+
+                const book = parseInt(localStorage.getItem("lastBook")) || 1;
+                const section = localStorage.getItem("lastSection") || "story";
+
+                openBook(book);
+
+                setTimeout(() => {
+                    showSection(section);
+                }, 100);
+
+            } else {
+                showMainSection(mainSection);
             }
-            function rerenderUI() {
+        }
+        function rerenderUI() {
 
-                // hlavní tlačítka
-                document.querySelector("button[onclick*='about']").innerText = "👤 " + t("about");
-                document.querySelector("button[onclick*='contact']").innerText = "✉ " + t("contact");
-                document.querySelector("button[onclick*='library']").innerText = "📚 " + t("library");
+            // hlavní tlačítka
+            document.querySelector("button[onclick*='about']").innerText = "👤 " + t("about");
+            document.querySelector("button[onclick*='contact']").innerText = "✉ " + t("contact");
+            document.querySelector("button[onclick*='library']").innerText = "📚 " + t("library");
 
-                // pokud jsi v knize → reload
-                if (localStorage.getItem("inBook") === "true") {
-                    openBook(localStorage.getItem("lastBook") || 1);
-                }
+            // pokud jsi v knize → reload
+            if (localStorage.getItem("inBook") === "true") {
+                openBook(localStorage.getItem("lastBook") || 1);
             }
-            function renderMenu() {
-                document.getElementById("title").innerText = t("title");
-                document.querySelector("button[onclick*='about']").innerText = "👤 " + t("about");
-                document.querySelector("button[onclick*='contact']").innerText = "✉ " + t("contact");
-                document.querySelector("button[onclick*='library']").innerText = "📚 " + t("library");
+        }
+        function renderMenu() {
+            document.getElementById("title").innerText = t("title");
 
-            }
-            function renderLibrary() {
+            const btnMW = document.querySelector("button[onclick*='mw']");
+            const btnContact = document.querySelector("button[onclick*='contact']");
+            const btnLibrary = document.querySelector("button[onclick*='library']");
 
-                library.innerHTML = ""; // 🔥 vyčistí staré knihy
+            if (btnMW) btnMW.innerText = "M + W";
+            if (btnContact) btnContact.innerText = "✉ " + t("contact");
+            if (btnLibrary) btnLibrary.innerText = "📚 " + t("library");
+        }
+        function renderLibrary() {
 
-                for (let i = 1; i <= 5; i++) {
-                    const book = document.createElement('div');
-                    book.className = 'book';
+            library.innerHTML = ""; // 🔥 vyčistí staré knihy
 
-                    book.innerHTML = `
+            for (let i = 1; i <= 5; i++) {
+                const book = document.createElement('div');
+                book.className = 'book';
+
+                book.innerHTML = `
         <div class="wrap">
             <div class="top">${i}</div>
 
@@ -1932,35 +1939,35 @@ if (section === "mw") {
         </div>
         `;
 
-                    book.onclick = () => openBook(i);
-                    library.appendChild(book);
-                }
+                book.onclick = () => openBook(i);
+                library.appendChild(book);
             }
-            function updateLangUI() {
-                document.querySelectorAll('.langSwitch span').forEach(el => {
-                    el.classList.remove("active");
+        }
+        function updateLangUI() {
+            document.querySelectorAll('.langSwitch span').forEach(el => {
+                el.classList.remove("active");
 
-                    if (el.innerText.includes(currentLang === "cz" ? "🇨🇿" : "🇬🇧")) {
-                        el.classList.add("active");
-                    }
-                });
-            }
-            function updateLayout(isHome) {
-                const visits = document.getElementById("visits");
-                const footer = document.getElementById("footer");
-
-                if (isHome) {
-                    visits.style.display = "block";
-                    footer.style.display = "block";
-                } else {
-                    visits.style.display = "none";
-                    footer.style.display = "none";
+                if (el.innerText.includes(currentLang === "cz" ? "🇨🇿" : "🇬🇧")) {
+                    el.classList.add("active");
                 }
+            });
+        }
+        function updateLayout(isHome) {
+            const visits = document.getElementById("visits");
+            const footer = document.getElementById("footer");
+
+            if (isHome) {
+                visits.style.display = "block";
+                footer.style.display = "block";
+            } else {
+                visits.style.display = "none";
+                footer.style.display = "none";
             }
-            function updateVisits() {
-                document.getElementById("visits").innerText =
-                    "👁 " + count + " " + t(count === 1 ? "visitOne" : "visitMany");
-            }
+        }
+        function updateVisits() {
+            document.getElementById("visits").innerText =
+                "👁 " + count + " " + t(count === 1 ? "visitOne" : "visitMany");
+        }
     </script>
     <div id="measureBox" style="
     position:absolute;
