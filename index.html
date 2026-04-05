@@ -295,6 +295,15 @@
                 opacity: 0;
             }
         }
+        .fade-in {
+    opacity: 0;
+    animation: fadeIn 2s ease forwards;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
     </style>
 
 </head>
@@ -353,7 +362,7 @@
     <script>
 
         const ADMIN_PASSWORD = "Vlk2Himilko"; // heslo pro web
-        const DEV_MODE = false; // 🔥 zapni při testování, false neaktivní true aktivní
+        const DEV_MODE = true; // 🔥 test režim: false neaktivní true aktivní
 
         if (DEV_MODE) {
             localStorage.removeItem("libraryUnlocked");
@@ -660,7 +669,7 @@
             setTimeout(() => {
                 flash.remove();
                 text.remove();
-            }, 800);
+            }, 2000);
         }
         // 📖 otevření knihy
         function openBook(i) {
@@ -1227,15 +1236,20 @@
 
             updateLangUI();
             renderMenu();
+
+            // ✅ knihovna se připraví (ale nezobrazí)
             renderLibrary();
-            localStorage.setItem("reload", "true");
 
-            if (inBook === "true") {
-                const book = parseInt(localStorage.getItem("lastBook")) || 1;
-                const section = localStorage.getItem("lastSection") || "story";
+            // 👇 zobraz welcome
+            content.innerHTML = `
+                <div style="text-align:center;">
+                    <img src="webimages/welcome.jpg" 
+                        style="max-width:90%;">
+                </div>
+            `;
 
-                openBook(book);
-            }
+            content.classList.add('active');
+            library.style.display = 'none';            
         };
         document.addEventListener("keydown", function (e) {
 
@@ -1293,6 +1307,13 @@
         localStorage.removeItem("libraryUnlocked");
     }
 
+    // ✅ pokud už je odemčeno → rovnou knihovna (BEZ HESLA)
+    if (localStorage.getItem("libraryUnlocked") === "true") {
+        content.classList.remove('active');
+        library.style.display = 'flex';
+        return;
+    }
+
     const message = currentLang === "cz"
         ? "🔒 Pouze ti, kdo znají tajemství knihovny, mohou vstoupit...\n\nZadej heslo:"
         : "🔒 Only those who know the secret of the library may enter...\n\nEnter the password:";
@@ -1301,32 +1322,40 @@
 
     if (pass === LIBRARY_PASSWORDS.cz || pass === LIBRARY_PASSWORDS.en) {
 
-    localStorage.setItem("libraryUnlocked", "true");
+        localStorage.setItem("libraryUnlocked", "true");
 
-    const successMsg = currentLang === "cz"
-        ? "📖 Brána se otevírá...\nVítej, poutníku."
-        : "📖 The gate opens...\nWelcome, traveler.";
+        const successMsg = currentLang === "cz"
+            ? "📖 Brána se otevírá...\nVítej, poutníku."
+            : "📖 The gate opens...\nWelcome, traveler.";
 
-    await lightEffect(successMsg);
+        await lightEffect(successMsg);
 
-    // ✅ zobraz knihovnu jen při správném hesle
-    content.classList.remove('active');
-    library.style.display = 'flex';
+        // ✅ zobraz knihovnu
+        content.classList.remove('active');
+        library.style.display = 'flex';
 
-} else {
+    } else {
 
-    const errorMsg = currentLang === "cz"
-        ? "❌ Temnota tě odmítla.\nTajemství knihovny ti zůstává skryto."
-        : "❌ The darkness rejects you.\nThe library remains hidden from you.";
+        const errorMsg = currentLang === "cz"
+            ? "❌ Temnota tě odmítla.\nTajemství knihovny ti zůstává skryto."
+            : "❌ The darkness rejects you.\nThe library remains hidden from you.";
 
-    await darkEffect(errorMsg);
+        await darkEffect(errorMsg);
 
-    // ❌ SCHOVAT VŠECHNO
-    content.classList.remove('active');
-    library.style.display = 'none';
+// 👇 přidáme obrázek POD efekt
+content.innerHTML = `
+    <div style="text-align:center;">
+        <img src="webimages/darkfucking.jpg" 
+     class="fade-in"
+     style="max-width:90%;">
+    </div>
+`;
 
-    return;
-}
+content.classList.add('active');
+library.style.display = 'none';
+
+        return;
+    }
 }
 if (section === "about") {
                 content.innerHTML = `
