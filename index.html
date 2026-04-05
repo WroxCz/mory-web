@@ -1196,31 +1196,13 @@ function showMainSection(section) {
 
     if (section === "contact") {
     content.innerHTML = `
-        <div style="max-width:800px; margin:auto;">
+    <div style="max-width:800px; margin:auto;">
 
-            <h2 style="text-align:center;">📖 ${t("guestbook")}</h2>
+        <h2 style="text-align:center;">📖 ${t("guestbook")}</h2>
 
-            <!-- ✍️ FORM -->
-            <form onsubmit="addMessage(event)" style="
-                display:flex;
-                flex-direction:column;
-                gap:10px;
-                margin:30px 0;
-                background:rgba(0,0,0,0.5);
-                padding:20px;
-                border:1px solid #444;
-                box-shadow:0 0 10px rgba(255,255,255,0.2);
-            ">
-                <input id="msgName" placeholder="${t("formName")}" required>
-                <textarea id="msgText" placeholder="${t("formMessage")}" required></textarea>
-                <button type="submit">${t("formButton")}</button>
-            </form>
-
-            <!-- 📜 VZKAZY -->
-            <div id="messages"></div>
-            
-            <div style="text-align:center; margin-bottom:20px; opacity:0.8;">
-            <p>
+        <!-- ✨ ÚVOD -->
+        <div style="text-align:center; margin:20px 0; opacity:0.85;">
+            <p style="line-height:1.6;">
                 Vítejte, poutníci.<br>
                 Nechť vás tyto stránky provedou příběhem.<br>
                 Máte-li přání či připomínky, zanechte svůj vzkaz v této temné kronice.
@@ -1229,7 +1211,30 @@ function showMainSection(section) {
                 — Wrox, Strážce knihovny
             </div>
         </div>
-    `;
+
+        <hr style="opacity:0.2; margin:20px 0;">
+
+        <!-- ✍️ FORM -->
+        <form onsubmit="addMessage(event)" style="
+            display:flex;
+            flex-direction:column;
+            gap:10px;
+            margin:30px 0;
+            background:rgba(0,0,0,0.5);
+            padding:20px;
+            border:1px solid #444;
+            box-shadow:0 0 10px rgba(255,255,255,0.2);
+        ">
+            <input id="msgName" placeholder="${t("formName")}" required>
+            <textarea id="msgText" placeholder="${t("formMessage")}" required></textarea>
+            <button type="submit">${t("formButton")}</button>
+        </form>
+
+        <!-- 📜 VZKAZY -->
+        <div id="messages"></div>
+
+    </div>
+`;
     loadMessages();
 }
 }
