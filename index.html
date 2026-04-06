@@ -22,6 +22,11 @@
             /* ← důležité */
         }
 
+        * {
+            box-sizing: border-box;
+        }
+
+
         body.contact-active .guard {
             display: block;
         }
@@ -46,6 +51,8 @@
             display: flex;
             flex-direction: column;
             align-items: center;
+
+            overflow-y: scroll;
         }
 
 
@@ -61,6 +68,7 @@
             background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.12), transparent 60%),
                 radial-gradient(circle at 70% 70%, rgba(255, 255, 255, 0.10), transparent 60%);
         }
+
 
         @keyframes glowPulse {
             0% {
@@ -385,6 +393,28 @@
                 opacity: 1;
             }
         }
+
+        .activeSong {
+            background: #222 !important;
+            color: #fff !important;
+            border-color: #aaa !important;
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.4);
+            animation: pulseGlow 2s infinite;
+        }
+
+        @keyframes pulseGlow {
+            0% {
+                box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+            }
+
+            50% {
+                box-shadow: 0 0 25px rgba(255, 255, 255, 0.6);
+            }
+
+            100% {
+                box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+            }
+        }
     </style>
 
 </head>
@@ -408,7 +438,7 @@
     </div>
 
     <div class="library" id="library"></div>
-    <div class="content" id="content"></div>
+    <div class="content music-book" id="content"></div>
 
     <div class="footer" id="footer">Website by Wrox. Story and pictures by Moryana. </div>
 
@@ -442,31 +472,6 @@
         window.orderBy = orderBy;
 
         document.addEventListener("DOMContentLoaded", () => {
-
-
-            const lightboxImg = document.getElementById("lightboxImg");
-
-            document.querySelectorAll("img").forEach(img => {
-                img.addEventListener("click", () => {
-                    lightbox.style.display = "flex";
-                    lightboxImg.src = img.src;
-                });
-            });
-
-            lightbox.addEventListener("click", () => {
-                lightbox.style.display = "none";
-            });
-
-        });
-
-        lightbox.addEventListener("click", () => {
-            lightbox.style.display = "none";
-        });
-
-        document.addEventListener("keydown", (e) => {
-            if (e.key === "Escape") {
-                lightbox.style.display = "none";
-            }
         });
 
     </script>
@@ -583,12 +588,29 @@
                 cz: "Neznámá kniha",
                 en: "Unknown book"
             },
+            6: {
+                cz: "Písně duše",
+                en: "Songs of the Soul"
+            },
         };
         const bookIcons = {
             1: "🔥💧",
-            2: "📖"
+            2: "📖",
+            3: "📖",
+            4: "📖",
+            5: "📖",
+            6: "🎵",
         };
-        const readyBooks = [1]; // sem budeš přidávat další hotové knihy
+        const songNames = [                // song0.mp3
+            "Ballad of Turayne",
+            "Dread Sovereign",
+            "From the Ashes of Loyalty",
+            "Kastleton – Port of Wind and Gold",
+            "Solitude",
+            "Song of Vienta",
+            "Under the Banner of New Oaths",
+        ];
+        const readyBooks = [1, 6]; // sem budeš přidávat další hotové knihy
         const chapterNames = {
             1: {
                 1: "Ruiny Turaynu",
@@ -806,8 +828,8 @@
             </div>
 
             <div id="sectionContent">
-    ${localStorage.getItem("lastSection") ? "" : `<p style="text-align:center;">${t("choosePart")}</p>`}
-</div>            
+             ${localStorage.getItem("lastSection") ? "" : `<p style="text-align:center;">${t("choosePart")}</p>`}
+            </div>            
         `;
 
                 // 🔥 JEDINÝ LISTENER PRO VŠECHNY TLAČÍTKA
@@ -820,6 +842,9 @@
                         showSection(section);
                     }
                 };
+            }
+            else if (i === 6) {
+                renderMusicBook();
             }
             else {
                 content.innerHTML = `
@@ -2001,7 +2026,7 @@ onmouseout="this.style.boxShadow=''">
 
             library.innerHTML = ""; // 🔥 vyčistí staré knihy
 
-            for (let i = 1; i <= 5; i++) {
+            for (let i = 1; i <= 6; i++) {
                 const book = document.createElement('div');
                 book.className = 'book';
 
@@ -2141,6 +2166,320 @@ onmouseout="this.style.boxShadow=''">
         function updateVisits() {
             document.getElementById("visits").innerText =
                 "👁 " + count + " " + t(count === 1 ? "visitOne" : "visitMany");
+        }
+        let songs = [];
+        let currentSongIndex = null;
+
+        async function loadSongs() {
+            let index = 1;
+            let list = [];
+
+            while (true) {
+                let name = `song${String(index).padStart(2, '0')}.mp3`;
+                let path = `knihy/kniha6/music/${name}`;
+
+                try {
+                    let res = await fetch(path);
+
+                    if (!res.ok) break;
+
+                    list.push({
+                        title: songNames[index - 1] || `Song ${index}`,
+                        file: path
+                    });
+
+                    index++;
+                } catch {
+                    break;
+                }
+            }
+
+            songs = list;
+        }
+        async function renderMusicBook() {
+            await loadSongs();
+
+            let html = `
+<style>
+.song-btn {
+    width: 100%;
+}
+    .song-list {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+}
+    
+/* 🔥 HOVER (bez pohybu!) */
+.song-btn:hover {
+    background: rgba(255,255,255,0.08);
+    box-shadow: 0 0 10px rgba(255,150,80,0.3);
+}
+
+/* 🎵 AKTIVNÍ SONG */
+.song-btn.active {
+    background: rgba(255,150,80,0.15);
+    box-shadow: 0 0 12px rgba(255,150,80,0.5);
+}
+</style>
+
+<div style="
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    padding:40px 20px;
+">
+
+    <!-- 💀 KARTA -->
+    <div class="music-card" style="
+    position:relative;
+    width:360px;
+    aspect-ratio: 9 / 16;
+    margin: 0 auto;
+
+    border-radius:12px;
+    overflow:hidden;
+    text-align:center;
+    box-shadow: 
+    0 0 60px rgba(0,0,0,0.9),
+    0 0 120px rgba(0,0,0,0.7);
+    border: 1px solid rgba(255,150,80,0.2);
+">
+
+        <!-- 🖼 POZADÍ -->
+        <img src="./webimages/skeleton_band.jpg" class="music-bg" style="
+            position:absolute;
+            inset:0;
+            width:100%;
+            height:100%;
+            object-fit: cover;
+            object-position: center 75%;
+            transform: scale(1.12);
+            opacity: 1;
+            filter: brightness(0.9);
+        ">
+
+        <!-- 🎵 OBSAH -->
+        <div style="
+            position:relative;
+            z-index:1;
+            padding:40px 20px;
+            display:flex;
+            flex-direction:column;
+            align-items:center;
+        ">
+
+            <h2 style="
+                margin-bottom:25px;
+                text-shadow: 0 0 12px rgba(255,150,80,0.4);
+            ">
+                🎵 ${books[6]?.[currentLang]}
+            </h2>
+
+            <!-- 🎶 SEZNAM -->
+            <div style="
+                display:flex;
+                flex-direction:column;
+                gap:12px;
+                width:100%;
+                align-items:center;
+            ">
+    `;
+
+            songs.forEach((song, i) => {
+                html += `
+        <button class="song-btn" id="songBtn${i}" onclick="playSong(${i})">
+            🎶 ${song.title}
+        </button>
+        `;
+            });
+
+            html += `
+            </div>
+
+            <!-- ▶️ PLAYER -->
+            <div id="musicPlayer">
+    <div style="text-align:center; width:100%; max-width:500px; margin:auto;">
+
+        <h3 id="songTitle" style="
+            margin-bottom:15px;
+            height:48px;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            text-align:center;
+        "></h3>
+
+        <audio id="audioPlayer" style="display:none;"></audio>
+
+        <div id="progressContainer" style="
+            width:100%;
+            height:6px;
+            background:#222;
+            border-radius:5px;
+            cursor:pointer;
+            margin-bottom:10px;
+        ">
+            <div id="progressBar" style="
+                height:100%;
+                width:0%;
+                background:#aaa;
+                border-radius:5px;
+            "></div>
+        </div>
+
+        <div id="timeInfo" style="
+            font-size:12px;
+            opacity:0.6;
+            margin-bottom:10px;
+        ">0:00 / 0:00</div>
+
+        <div style="display:flex; justify-content:center; gap:15px;">
+            <button onclick="prevSong()">⏮</button>
+            <button onclick="togglePlay()">⏯</button>
+            <button onclick="nextSong()">⏭</button>
+        </div>
+
+    </div>
+</div>
+
+            <!-- 🔙 ZPĚT -->
+            <div class="back" onclick="goBack()" style="
+                margin-top:25px;
+                opacity:0.7;
+                cursor:pointer;
+            ">
+                ${t("back")}
+            </div>
+
+        </div>
+    </div>
+</div>
+`;
+
+            content.innerHTML = html;
+            const img = document.querySelector(".music-bg");
+const card = document.querySelector(".music-card");
+
+if (img && card) {
+    img.onload = () => {
+
+        const ratio = img.naturalWidth / img.naturalHeight;
+
+        if (ratio < 1) {
+            card.style.aspectRatio = "9 / 16";
+            img.style.objectFit = "cover";
+        } else {
+            card.style.aspectRatio = "16 / 9";
+            img.style.objectFit = "contain";
+        }
+    };
+}
+
+            const audio = document.getElementById("audioPlayer");
+            const progressBar = document.getElementById("progressBar");
+            const progressContainer = document.getElementById("progressContainer");
+            const timeInfo = document.getElementById("timeInfo");
+
+            if (!audio) {
+                console.error("❌ audioPlayer nenalezen");
+                return;
+            }
+
+            // 🔥 EVENTY – jen jednou!
+            audio.ontimeupdate = () => {
+                if (!audio.duration) return;
+
+                const percent = (audio.currentTime / audio.duration) * 100;
+                progressBar.style.width = percent + "%";
+
+                const format = (t) => {
+                    const m = Math.floor(t / 60);
+                    const s = Math.floor(t % 60).toString().padStart(2, "0");
+                    return m + ":" + s;
+                };
+
+                timeInfo.innerText =
+                    format(audio.currentTime) + " / " + format(audio.duration);
+            };
+
+            audio.onended = () => nextSong();
+
+            progressContainer.onclick = (e) => {
+                const rect = progressContainer.getBoundingClientRect();
+                const percent = (e.clientX - rect.left) / rect.width;
+                audio.currentTime = percent * audio.duration;
+            };
+        }
+        function playSong(index) {
+
+            console.log("hraju", index);
+
+            // aktivní tlačítko
+            document.querySelectorAll('.song-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`songBtn${index}`)?.classList.add('active');
+
+            if (!songs || !songs[index]) return;
+
+            currentSongIndex = index;
+
+            // reset stylů
+            songs.forEach((_, i) => {
+                const btn = document.getElementById(`songBtn${i}`);
+                if (btn) btn.classList.remove("activeSong");
+            });
+
+            const activeBtn = document.getElementById(`songBtn${index}`);
+            if (activeBtn) activeBtn.classList.add("activeSong");
+
+            // 🔥 TADY JE TEN KLÍČ
+            const audio = document.getElementById("audioPlayer");
+            const title = document.getElementById("songTitle");
+
+            // změna názvu (BEZ renderu)
+            title.innerText = songs[index].title;
+
+            // změna songu
+            audio.src = songs[index].file;
+
+            // přehrát
+            audio.play();
+        }
+        function nextSong() {
+            let next = currentSongIndex + 1;
+            if (next >= songs.length) next = 0;
+            playSong(next);
+        }
+
+        function prevSong() {
+            let prev = currentSongIndex - 1;
+            if (prev < 0) prev = songs.length - 1;
+            playSong(prev);
+
+            // ⏱ update
+            audio.ontimeupdate = () => {
+                const percent = (audio.currentTime / audio.duration) * 100;
+                progressBar.style.width = percent + "%";
+
+                const format = (t) => {
+                    const m = Math.floor(t / 60);
+                    const s = Math.floor(t % 60).toString().padStart(2, "0");
+                    return `${m}:${s}`;
+                };
+
+                timeInfo.innerText = `${format(audio.currentTime)} / ${format(audio.duration)}`;
+            };
+        }
+
+        function togglePlay() {
+            const audio = document.getElementById("audioPlayer");
+            if (!audio) return;
+
+            if (audio.paused) {
+                audio.play();
+            } else {
+                audio.pause();
+            }
         }
     </script>
     <div id="measureBox" style="
