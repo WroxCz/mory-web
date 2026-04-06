@@ -1393,6 +1393,16 @@
 
                 return; // ❗ zastaví další logiku
             }
+            if (document.getElementById("skeletonImg")) {
+
+                if (e.key === "ArrowRight") nextSkeleton();
+                if (e.key === "ArrowLeft") prevSkeleton();
+                if (e.key === "Escape") {
+                    document.getElementById("skeletonImg").parentElement.remove();
+                }
+
+                return;
+            }
 
             // 📖 jinak ovládá knihu
             if (e.key === "ArrowRight") {
@@ -2081,6 +2091,8 @@ onmouseout="this.style.boxShadow=''">
             let index = 1;
             let html = "";
 
+            window.skeletonImages = [];
+
             while (true) {
 
                 let name = `kostlivec${String(index).padStart(2, '0')}.jpg`;
@@ -2091,10 +2103,12 @@ onmouseout="this.style.boxShadow=''">
 
                     if (!res.ok) break;
 
+                    window.skeletonImages.push(path);
+
                     html += `
-                <img src="${path}" 
-                     onclick="openSkeleton(${index - 1})"
-                     style="
+                        <img src="${path}" 
+                        onclick="openSkeleton(${index - 1})"
+                        style="
                         width:100%;
                         cursor:pointer;
                         border:1px solid #444;
@@ -2110,7 +2124,28 @@ onmouseout="this.style.boxShadow=''">
 
             grid.innerHTML = html;
         }
+        function nextSkeleton() {
+            currentSkeleton++;
+
+            if (currentSkeleton >= skeletonImages.length) {
+                currentSkeleton = 0;
+            }
+
+            document.getElementById("skeletonImg").src = skeletonImages[currentSkeleton];
+        }
+
+        function prevSkeleton() {
+            currentSkeleton--;
+
+            if (currentSkeleton < 0) {
+                currentSkeleton = skeletonImages.length - 1;
+            }
+
+            document.getElementById("skeletonImg").src = skeletonImages[currentSkeleton];
+        }
         function openSkeleton(index) {
+
+            window.currentSkeleton = index;
 
             let viewer = document.createElement("div");
 
@@ -2128,8 +2163,23 @@ onmouseout="this.style.boxShadow=''">
     `;
 
             viewer.innerHTML = `
-        <img src="kostlivci/kostlivec${String(index + 1).padStart(2, '0')}.jpg"
+        <button onclick="prevSkeleton()" style="
+            position:absolute;
+            left:20px;
+            font-size:30px;
+            cursor:pointer;
+        ">⬅</button>
+
+        <img id="skeletonImg"
+             src="${skeletonImages[index]}"
              style="max-width:90%; max-height:90%;">
+
+        <button onclick="nextSkeleton()" style="
+            position:absolute;
+            right:20px;
+            font-size:30px;
+            cursor:pointer;
+        ">➡</button>
 
         <div onclick="this.parentElement.remove()" style="
             position:absolute;
@@ -2168,9 +2218,23 @@ onmouseout="this.style.boxShadow=''">
                 "👁 " + count + " " + t(count === 1 ? "visitOne" : "visitMany");
         }
         let songs = [];
+        let songsLoaded = false;
+        let songsLoading = false;
         let currentSongIndex = null;
 
         async function loadSongs() {
+            if (songsLoaded) return;
+
+            if (songsLoading) {
+                // 🧠 počkej než to doběhne
+                while (songsLoading) {
+                    await new Promise(r => setTimeout(r, 50));
+                }
+                return;
+            }
+
+            songsLoading = true;
+
             let index = 1;
             let list = [];
 
@@ -2195,9 +2259,18 @@ onmouseout="this.style.boxShadow=''">
             }
 
             songs = list;
+            songsLoaded = true;
+            songsLoading = false;
         }
+
+        let isRenderingMusic = false;
+
         async function renderMusicBook() {
-            await loadSongs();
+            if (isRenderingMusic) return;
+            isRenderingMusic = true;    
+
+            try {
+                await loadSongs();
 
             let html = `
 <style>
@@ -2359,22 +2432,22 @@ onmouseout="this.style.boxShadow=''">
 
             content.innerHTML = html;
             const img = document.querySelector(".music-bg");
-const card = document.querySelector(".music-card");
+            const card = document.querySelector(".music-card");
 
-if (img && card) {
-    img.onload = () => {
+            if (img && card) {
+                img.onload = () => {
 
-        const ratio = img.naturalWidth / img.naturalHeight;
+                    const ratio = img.naturalWidth / img.naturalHeight;
 
-        if (ratio < 1) {
-            card.style.aspectRatio = "9 / 16";
-            img.style.objectFit = "cover";
-        } else {
-            card.style.aspectRatio = "16 / 9";
-            img.style.objectFit = "contain";
-        }
-    };
-}
+                    if (ratio < 1) {
+                        card.style.aspectRatio = "9 / 16";
+                        img.style.objectFit = "cover";
+                    } else {
+                        card.style.aspectRatio = "16 / 9";
+                        img.style.objectFit = "contain";
+                    }
+                };
+            }
 
             const audio = document.getElementById("audioPlayer");
             const progressBar = document.getElementById("progressBar");
@@ -2383,6 +2456,7 @@ if (img && card) {
 
             if (!audio) {
                 console.error("❌ audioPlayer nenalezen");
+                isRenderingMusic = false; // 🔥 ODEMKNI!
                 return;
             }
 
@@ -2410,6 +2484,9 @@ if (img && card) {
                 const percent = (e.clientX - rect.left) / rect.width;
                 audio.currentTime = percent * audio.duration;
             };
+            } finally {
+                isRenderingMusic = false;
+            }   
         }
         function playSong(index) {
 
