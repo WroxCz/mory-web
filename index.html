@@ -2,6 +2,32 @@
 <html lang="cs">
 
 <head>
+
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyDx5aAcfQcRmb7JNDABe-CTphZwZ_xpoSA",
+            authDomain: "wrox-61299.firebaseapp.com",
+            projectId: "wrox-61299",
+            storageBucket: "wrox-61299.firebasestorage.app",
+            messagingSenderId: "769685871738",
+            appId: "1:769685871738:web:d99cecf98fe3b3f756afc3",
+            measurementId: "G-D7E49VBHH8"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+
+        const db = firebase.firestore();
+        const auth = firebase.auth();
+
+        // 🔥 zpřístupnění pro zbytek kódu
+        window.db = db;
+        window.auth = auth;
+    </script>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Knihovna příběhů</title>
@@ -140,6 +166,36 @@
         .langSwitch img:hover {
             opacity: 1;
             transform: scale(1.2);
+        }
+
+        .admin-menu {
+            position: relative;
+            display: inline-block;
+        }
+
+        .admin-dropdown {
+            display: none;
+            position: absolute;
+            right: 0;
+            background: #111;
+            border: 1px solid #555;
+            padding: 5px;
+            z-index: 1000;
+        }
+
+        .admin-dropdown button {
+            display: block;
+            width: 100%;
+            background: none;
+            border: none;
+            color: white;
+            padding: 8px;
+            cursor: pointer;
+            text-align: left;
+        }
+
+        .admin-dropdown button:hover {
+            background: #333;
         }
 
         h1 {
@@ -435,7 +491,17 @@
         <button onclick="showMainSection('mw')">M + W</button>
         <button onclick="showMainSection('contact')">✉</button>
         <button onclick="showMainSection('library')">📚</button>
+        <div class="admin-menu">
+            <button onclick="toggleAdminMenu()">⚙</button>
+
+            <div id="adminDropdown" class="admin-dropdown">
+                <button onclick="adminLogin()">🔐 Přihlásit</button>
+                <button onclick="adminLogout()">🚪 Odhlásit</button>
+            </div>
+        </div>
     </div>
+
+
 
     <div class="library" id="library"></div>
     <div class="content music-book" id="content"></div>
@@ -444,41 +510,8 @@
 
     <div class="textBlock"></div>
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-        import { query, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-
-        const firebaseConfig = {
-            apiKey: "AIza....",
-            authDomain: "wrox-61299.firebaseapp.com",
-            projectId: "wrox-61299",
-            storageBucket: "wrox-61299.appspot.com",
-            messagingSenderId: "...",
-            appId: "..."
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-        window.db = db;
-        window.getDocs = getDocs;
-        window.collection = collection;
-        window.addDoc = addDoc;
-        window.deleteDoc = deleteDoc;
-        window.doc = doc;
-
-        window.updateDoc = updateDoc;
-        window.query = query;
-        window.orderBy = orderBy;
-
-        document.addEventListener("DOMContentLoaded", () => {
-        });
-
-    </script>
-
     <script>
 
-        const ADMIN_PASSWORD = "Vlk2Himilko"; // heslo pro web
         const DEV_MODE = false; // 🔥 test režim: false neaktivní true aktivní
 
         if (DEV_MODE) {
@@ -812,6 +845,22 @@
                 text.remove();
             }, 2000);
         }
+        async function adminLogin() {
+            const email = prompt("📧 Email:");
+            const password = prompt("🔒 Heslo:");
+
+            try {
+                await auth.signInWithEmailAndPassword(email, password);
+                alert("✅ Přihlášen jako admin");
+            } catch (e) {
+                console.error(e);
+                alert("❌ " + e.message);
+            }
+        }
+        function adminLogout() {
+            auth.signOut();
+            alert("👋 Odhlášen");
+        }
         // 📖 otevření knihy
         function openBook(i) {
             updateLayout(false);
@@ -968,12 +1017,12 @@
             // 👤 POSTAVY
             else if (section === "characters") {
 
-    charactersPage = 0;
+                charactersPage = 0;
 
-    container.style.opacity = 0;
+                container.style.opacity = 0;
 
-    setTimeout(() => {
-        container.innerHTML = `
+                setTimeout(() => {
+                    container.innerHTML = `
             <h3>${t("characters")}</h3>
 
             <div id="charactersGrid" style="
@@ -984,27 +1033,27 @@
             "></div>
         `;
 
-        container.style.opacity = 1;
+                    container.style.opacity = 1;
 
-        renderCharactersPage();
-    }, 250);
-}
-}
-function renderCharactersPage() {
+                    renderCharactersPage();
+                }, 250);
+            }
+        }
+        function renderCharactersPage() {
 
-    const grid = document.getElementById("charactersGrid");
+            const grid = document.getElementById("charactersGrid");
 
-    if (!grid) return;
+            if (!grid) return;
 
-    const start = charactersPage * CHARACTERS_PER_PAGE;
-    const end = start + CHARACTERS_PER_PAGE;
+            const start = charactersPage * CHARACTERS_PER_PAGE;
+            const end = start + CHARACTERS_PER_PAGE;
 
-    const pageChars = characters.slice(start, end);
+            const pageChars = characters.slice(start, end);
 
-    let html = "";
+            let html = "";
 
-    pageChars.forEach((char, index) => {
-        html += `
+            pageChars.forEach((char, index) => {
+                html += `
             <div onclick="openCharacter(${start + index})" style="
                 border:1px solid #555;
                 padding:10px;
@@ -1018,11 +1067,11 @@ function renderCharactersPage() {
                 <div style="opacity:0.7;">${char.role[currentLang]}</div>
             </div>
         `;
-    });
+            });
 
-    const totalPages = Math.ceil(characters.length / CHARACTERS_PER_PAGE);
+            const totalPages = Math.ceil(characters.length / CHARACTERS_PER_PAGE);
 
-    html += `
+            html += `
         <div style="grid-column: span 2; text-align:center; margin-top:10px;">
             <button onclick="prevCharactersPage()" ${charactersPage === 0 ? "disabled" : ""}>⬅</button>
 
@@ -1034,8 +1083,8 @@ function renderCharactersPage() {
         </div>
     `;
 
-    grid.innerHTML = html;
-}
+            grid.innerHTML = html;
+        }
         function nextCharactersPage() {
             if ((charactersPage + 1) * CHARACTERS_PER_PAGE < characters.length) {
                 charactersPage++;
@@ -1260,6 +1309,12 @@ function renderCharactersPage() {
                 list.style.display = "none";
             }
         }
+        function toggleAdminMenu() {
+            const menu = document.getElementById("adminDropdown");
+
+            const isOpen = menu.style.display === "block";
+            menu.style.display = isOpen ? "none" : "block";
+        }
         async function loadGallery() {
             const grid = document.getElementById("galleryGrid");
 
@@ -1472,8 +1527,9 @@ function renderCharactersPage() {
                 if (e.key === "ArrowLeft") prevImg();
                 if (e.key === "Escape") closeImg();
 
-                return; // ❗ zastaví další logiku
+                return;
             }
+
             if (document.getElementById("skeletonImg")) {
 
                 if (e.key === "ArrowRight") nextSkeleton();
@@ -1483,6 +1539,17 @@ function renderCharactersPage() {
                 }
 
                 return;
+            }
+
+            // ⚙ ADMIN MENU (NOVÉ)
+            const adminMenu = document.getElementById("adminDropdown");
+            if (adminMenu && adminMenu.style.display === "block") {
+
+                if (e.key === "Escape") {
+                    adminMenu.style.display = "none";
+                }
+
+                return; // ❗ zabrání scrollování stránek
             }
 
             // 📖 jinak ovládá knihu
@@ -1859,7 +1926,7 @@ onmouseout="this.style.boxShadow=''">
             flex-direction:column;
             gap:10px;
             margin:30px 0;
-            background:rgba(,0,0,0.5);
+            background:rgba(0,0,0,0.5);
             padding:20px;
             border:1px solid #444;
             box-shadow:0 0 10px rgba(255,255,255,0.2);
@@ -1952,7 +2019,7 @@ onmouseout="this.style.boxShadow=''">
             localStorage.setItem("lastMessageTime", now);
 
             // ✅ TEPRVE TEĎ ULOŽIT
-            await addDoc(collection(db, "messages"), {
+            await db.collection("messages").add({
                 name: sanitize(name),
                 text: sanitize(text),
                 time: new Date(),
@@ -1967,19 +2034,20 @@ onmouseout="this.style.boxShadow=''">
             const container = document.getElementById("messages");
             if (!container) return;
 
-            const q = query(collection(db, "messages"), orderBy("time", "desc"));
-            const querySnapshot = await getDocs(q);
+            const snapshot = await db.collection("messages")
+                .orderBy("time", "desc")
+                .get();
 
             let html = "";
 
-            if (querySnapshot.empty) {
+            if (snapshot.empty) {
                 container.innerHTML = `<p style="text-align:center; opacity:0.6;">
             ${t("emptyMessages")}
         </p>`;
                 return;
             }
 
-            querySnapshot.forEach((docSnap) => {   // ✅ opraveno
+            snapshot.forEach((docSnap) => {   // ✅ opraveno
                 const msg = docSnap.data();
 
                 html += `
@@ -2022,47 +2090,30 @@ onmouseout="this.style.boxShadow=''">
 
             if (!reply) return;
 
-            await updateDoc(doc(db, "messages", id), {
+            await db.collection("messages").doc(id).update({
                 reply: sanitize(reply)
             });
 
             loadMessages();
         }
         async function deleteMessage(id) {
-            const pass = prompt("🔒 Zadej heslo pro smazání:");
 
-            if (pass !== ADMIN_PASSWORD) {
-                alert("❌ Špatné heslo");
+            const user = auth.currentUser;
+
+            if (!user) {
+                alert("❌ Nejste přihlášen jako admin");
                 return;
             }
 
             try {
-                await deleteDoc(doc(db, "messages", id));
-                console.log("✅ Smazáno:", id);
+                await db.collection("messages").doc(id).delete();
             } catch (e) {
-                console.error("❌ CHYBA MAZÁNÍ:", e);
+                console.error(e);
             }
 
             loadMessages();
         }
-        async function replyMessage(id) {
-            const pass = prompt("🔒 Admin heslo:");
 
-            if (pass !== ADMIN_PASSWORD) {
-                alert("❌ Špatné heslo");
-                return;
-            }
-
-            const reply = prompt("💬 Napiš odpověď:");
-
-            if (!reply) return;
-
-            await updateDoc(doc(db, "messages", id), {
-                reply: sanitize(reply)
-            });
-
-            loadMessages();
-        }
         function setLang(lang) {
             currentLang = lang;
             localStorage.setItem("lang", lang);
