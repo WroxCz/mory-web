@@ -567,6 +567,11 @@
         }
         let currentChapter = 1;
         let page = 0;
+        let galleryImages = [];
+        let galleryPage = 0;
+        const IMAGES_PER_PAGE = 9;
+        let charactersPage = 0;
+        const CHARACTERS_PER_PAGE = 4;
         const books = {
             1: {
                 cz: "Oheň a Voda",
@@ -963,44 +968,85 @@
             // 👤 POSTAVY
             else if (section === "characters") {
 
-                let html = `<h3>${t("characters")}</h3>
-        <div style="
-            display:grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap:25px;
-            padding:10px;
-        ">`;
+    charactersPage = 0;
 
-                characters.forEach((char, index) => {
-                    html += `
-                <div onclick="openCharacter(${index})" style="
-                    border:1px solid #555;
-                    padding:10px;
-                    text-align:center;
-                    background:rgba(0,0,0,0.4);
-                    cursor:pointer;
-                ">
-                    <img src="knihy/kniha1/images/${char.img}" 
-                         style="width:100%; height:300px; object-fit:cover; object-position:top;">
-                    <h4>${char.name}</h4>
-                    <div style="opacity:0.7;">${char.role[currentLang]}</div>
-                </div>
-            `;
-                });
+    container.style.opacity = 0;
 
-                html += `</div>`;
-                container.style.opacity = 0;
+    setTimeout(() => {
+        container.innerHTML = `
+            <h3>${t("characters")}</h3>
 
-                setTimeout(() => {
-                    container.innerHTML = html;
-                    container.style.opacity = 1;
-                }, 250);
+            <div id="charactersGrid" style="
+                display:grid;
+                grid-template-columns: repeat(2, 1fr);
+                gap:25px;
+                padding:10px;
+            "></div>
+        `;
+
+        container.style.opacity = 1;
+
+        renderCharactersPage();
+    }, 250);
+}
+}
+function renderCharactersPage() {
+
+    const grid = document.getElementById("charactersGrid");
+
+    if (!grid) return;
+
+    const start = charactersPage * CHARACTERS_PER_PAGE;
+    const end = start + CHARACTERS_PER_PAGE;
+
+    const pageChars = characters.slice(start, end);
+
+    let html = "";
+
+    pageChars.forEach((char, index) => {
+        html += `
+            <div onclick="openCharacter(${start + index})" style="
+                border:1px solid #555;
+                padding:10px;
+                text-align:center;
+                background:rgba(0,0,0,0.4);
+                cursor:pointer;
+            ">
+                <img src="knihy/kniha1/images/${char.img}" 
+                     style="width:100%; height:250px; object-fit:cover; object-position:top;">
+                <h4>${char.name}</h4>
+                <div style="opacity:0.7;">${char.role[currentLang]}</div>
+            </div>
+        `;
+    });
+
+    const totalPages = Math.ceil(characters.length / CHARACTERS_PER_PAGE);
+
+    html += `
+        <div style="grid-column: span 2; text-align:center; margin-top:10px;">
+            <button onclick="prevCharactersPage()" ${charactersPage === 0 ? "disabled" : ""}>⬅</button>
+
+            <span style="margin:0 10px;">
+                ${charactersPage + 1} / ${totalPages}
+            </span>
+
+            <button onclick="nextCharactersPage()" ${charactersPage === totalPages - 1 ? "disabled" : ""}>➡</button>
+        </div>
+    `;
+
+    grid.innerHTML = html;
+}
+        function nextCharactersPage() {
+            if ((charactersPage + 1) * CHARACTERS_PER_PAGE < characters.length) {
+                charactersPage++;
+                renderCharactersPage();
             }
+        }
 
-
-
-            if (container) {
-                container.style.opacity = 1;
+        function prevCharactersPage() {
+            if (charactersPage > 0) {
+                charactersPage--;
+                renderCharactersPage();
             }
         }
         // 📄 načítání kapitol
@@ -1236,24 +1282,23 @@
                 }
             }
 
-            window.galleryImages = images;
+            galleryImages = images;
+            galleryPage = 0;
 
-            let html = "";
+            renderGalleryPage();
+        }
+        function nextGalleryPage() {
+            if ((galleryPage + 1) * IMAGES_PER_PAGE < galleryImages.length) {
+                galleryPage++;
+                renderGalleryPage();
+            }
+        }
 
-            images.forEach((img, i) => {
-                html += `
-            <img src="${img}" onclick="openImage(${i})" style="
-                width:100%;
-                cursor:pointer;
-                border:1px solid #444;
-                transition:0.3s;
-            "
-            onmouseover="this.style.transform='scale(1.05)'"
-            onmouseout="this.style.transform='scale(1)'">
-        `;
-            });
-
-            grid.innerHTML = html;
+        function prevGalleryPage() {
+            if (galleryPage > 0) {
+                galleryPage--;
+                renderGalleryPage();
+            }
         }
         function openImage(index) {
 
@@ -1293,6 +1338,42 @@
     `;
 
             document.body.appendChild(viewer);
+        }
+        function renderGalleryPage() {
+            const grid = document.getElementById("galleryGrid");
+
+            const start = galleryPage * IMAGES_PER_PAGE;
+            const end = start + IMAGES_PER_PAGE;
+
+            const pageImages = galleryImages.slice(start, end);
+
+            let html = "";
+
+            pageImages.forEach((img, i) => {
+                html += `
+            <img src="${img}" onclick="openImage(${start + i})" style="
+                width:100%;
+                cursor:pointer;
+                border:1px solid #444;
+                transition:0.3s;
+            "
+            onmouseover="this.style.transform='scale(1.05)'"
+            onmouseout="this.style.transform='scale(1)'">
+        `;
+            });
+
+            // 🔥 STRÁNKOVÁNÍ
+            html += `
+        <div style="grid-column: span 3; text-align:center; margin-top:10px;">
+            <button onclick="prevGalleryPage()">⬅</button>
+            <span style="margin:0 10px;">
+                ${galleryPage + 1} / ${Math.ceil(galleryImages.length / IMAGES_PER_PAGE)}
+            </span>
+            <button onclick="nextGalleryPage()">➡</button>
+        </div>
+    `;
+
+            grid.innerHTML = html;
         }
         function nextImg() {
             currentImage++;
@@ -2267,12 +2348,12 @@ onmouseout="this.style.boxShadow=''">
 
         async function renderMusicBook() {
             if (isRenderingMusic) return;
-            isRenderingMusic = true;    
+            isRenderingMusic = true;
 
             try {
                 await loadSongs();
 
-            let html = `
+                let html = `
 <style>
 .song-btn {
     width: 100%;
@@ -2359,15 +2440,15 @@ onmouseout="this.style.boxShadow=''">
             ">
     `;
 
-            songs.forEach((song, i) => {
-                html += `
+                songs.forEach((song, i) => {
+                    html += `
         <button class="song-btn" id="songBtn${i}" onclick="playSong(${i})">
             🎶 ${song.title}
         </button>
         `;
-            });
+                });
 
-            html += `
+                html += `
             </div>
 
             <!-- ▶️ PLAYER -->
@@ -2430,63 +2511,63 @@ onmouseout="this.style.boxShadow=''">
 </div>
 `;
 
-            content.innerHTML = html;
-            const img = document.querySelector(".music-bg");
-            const card = document.querySelector(".music-card");
+                content.innerHTML = html;
+                const img = document.querySelector(".music-bg");
+                const card = document.querySelector(".music-card");
 
-            if (img && card) {
-                img.onload = () => {
+                if (img && card) {
+                    img.onload = () => {
 
-                    const ratio = img.naturalWidth / img.naturalHeight;
+                        const ratio = img.naturalWidth / img.naturalHeight;
 
-                    if (ratio < 1) {
-                        card.style.aspectRatio = "9 / 16";
-                        img.style.objectFit = "cover";
-                    } else {
-                        card.style.aspectRatio = "16 / 9";
-                        img.style.objectFit = "contain";
-                    }
+                        if (ratio < 1) {
+                            card.style.aspectRatio = "9 / 16";
+                            img.style.objectFit = "cover";
+                        } else {
+                            card.style.aspectRatio = "16 / 9";
+                            img.style.objectFit = "contain";
+                        }
+                    };
+                }
+
+                const audio = document.getElementById("audioPlayer");
+                const progressBar = document.getElementById("progressBar");
+                const progressContainer = document.getElementById("progressContainer");
+                const timeInfo = document.getElementById("timeInfo");
+
+                if (!audio) {
+                    console.error("❌ audioPlayer nenalezen");
+                    isRenderingMusic = false; // 🔥 ODEMKNI!
+                    return;
+                }
+
+                // 🔥 EVENTY – jen jednou!
+                audio.ontimeupdate = () => {
+                    if (!audio.duration) return;
+
+                    const percent = (audio.currentTime / audio.duration) * 100;
+                    progressBar.style.width = percent + "%";
+
+                    const format = (t) => {
+                        const m = Math.floor(t / 60);
+                        const s = Math.floor(t % 60).toString().padStart(2, "0");
+                        return m + ":" + s;
+                    };
+
+                    timeInfo.innerText =
+                        format(audio.currentTime) + " / " + format(audio.duration);
                 };
-            }
 
-            const audio = document.getElementById("audioPlayer");
-            const progressBar = document.getElementById("progressBar");
-            const progressContainer = document.getElementById("progressContainer");
-            const timeInfo = document.getElementById("timeInfo");
+                audio.onended = () => nextSong();
 
-            if (!audio) {
-                console.error("❌ audioPlayer nenalezen");
-                isRenderingMusic = false; // 🔥 ODEMKNI!
-                return;
-            }
-
-            // 🔥 EVENTY – jen jednou!
-            audio.ontimeupdate = () => {
-                if (!audio.duration) return;
-
-                const percent = (audio.currentTime / audio.duration) * 100;
-                progressBar.style.width = percent + "%";
-
-                const format = (t) => {
-                    const m = Math.floor(t / 60);
-                    const s = Math.floor(t % 60).toString().padStart(2, "0");
-                    return m + ":" + s;
+                progressContainer.onclick = (e) => {
+                    const rect = progressContainer.getBoundingClientRect();
+                    const percent = (e.clientX - rect.left) / rect.width;
+                    audio.currentTime = percent * audio.duration;
                 };
-
-                timeInfo.innerText =
-                    format(audio.currentTime) + " / " + format(audio.duration);
-            };
-
-            audio.onended = () => nextSong();
-
-            progressContainer.onclick = (e) => {
-                const rect = progressContainer.getBoundingClientRect();
-                const percent = (e.clientX - rect.left) / rect.width;
-                audio.currentTime = percent * audio.duration;
-            };
             } finally {
                 isRenderingMusic = false;
-            }   
+            }
         }
         function playSong(index) {
 
