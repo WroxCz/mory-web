@@ -2375,7 +2375,7 @@ onmouseout="this.style.boxShadow=''">
                 let path = `knihy/kniha6/music/${name}`;
 
                 try {
-                    let res = await fetch(path);
+                    let res = await fetch(path, { method: "HEAD" });
 
                     if (!res.ok) break;
 
